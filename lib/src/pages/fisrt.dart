@@ -7,8 +7,8 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'LoginPage.dart';
 import 'OnboardingPage.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class First extends StatelessWidget {
+  const First({super.key});
 
   @override
   Widget build(BuildContext context) {

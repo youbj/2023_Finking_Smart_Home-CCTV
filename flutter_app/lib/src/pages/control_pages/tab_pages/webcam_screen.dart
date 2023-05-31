@@ -1,5 +1,4 @@
 import 'dart:html';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
@@ -7,18 +6,10 @@ Future<void> main() async {
   runApp(WebcamScreen());
 }
 
-class WebcamScreen extends StatefulWidget {
-  @override
-  _WebcamScreenState createState() => _WebcamScreenState();
-}
-
-class _WebcamScreenState extends State<WebcamScreen> {
+class WebcamScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-      body: AppBody(),
-    ));
+    return AppBody();
   }
 }
 
@@ -71,154 +62,49 @@ class _AppBodyState extends State<AppBody> {
     if (cameras!.isEmpty) {
       return Center(child: Text('사용 가능한 카메라가 없습니다.'));
     }
-    return CameraView(cameras: cameras!);
+    return CameraView(camera: cameras![0]);
   }
 }
 
 class CameraView extends StatefulWidget {
-  final List<CameraDescription> cameras;
+  final CameraDescription camera;
 
-  const CameraView({Key? key, required this.cameras}) : super(key: key);
+  const CameraView({Key? key, required this.camera}) : super(key: key);
 
   @override
   _CameraViewState createState() => _CameraViewState();
 }
 
 class _CameraViewState extends State<CameraView> {
-  String? error;
-  CameraController? controller;
-  late CameraDescription cameraDescription = widget.cameras[0];
-
-  Future<void> initCam(CameraDescription description) async {
-    setState(() {
-      controller = CameraController(description, ResolutionPreset.max);
-    });
-
-    try {
-      await controller!.initialize();
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-      });
-    }
-
-    setState(() {});
-  }
+  late CameraController controller;
 
   @override
   void initState() {
     super.initState();
-    initCam(cameraDescription);
+    controller = CameraController(widget.camera, ResolutionPreset.max);
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (error != null) {
-      return Center(
-        child: Text('Initializing error: $error\nCamera list:'),
-      );
-    }
-    if (controller == null) {
-      return Center(child: Text('Loading controller...'));
-    }
-    if (!controller!.value.isInitialized) {
+    if (!controller.value.isInitialized) {
       return Center(child: Text('Initializing camera...'));
     }
-    var size = MediaQuery.of(context).size;
 
-    return ListView.builder(
-      itemCount: 1,
-      itemBuilder: (context, index) {
-        return Column(
-          children: [
-            Container(
-              color: Colors.amber,
-              width: size.width * 0.8,
-              padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-              child: AspectRatio(
-                  aspectRatio: 16 / 9, child: CameraPreview(controller!)),
-            ),
-            Container(
-              width: size.width * 0.8,
-              color: Colors.amberAccent,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Home'),
-                    Text('배터리 잔량'),
-                    Text('로그 : 2023-05-31')
-                  ]),
-            )
-          ],
-        );
-      },
+    return AspectRatio(
+      aspectRatio: controller.value.aspectRatio,
+      child: CameraPreview(controller),
     );
   }
 }
-/*Material(
-            child: DropdownButton<CameraDescription>(
-              value: cameraDescription,
-              icon: const Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 16,
-              onChanged: (CameraDescription? newValue) async {
-                if (controller != null) {
-                  await controller!.dispose();
-                }
-                setState(() {
-                  controller = null;
-                  cameraDescription = newValue!;
-                });
-
-                initCam(newValue!);
-              },
-              items: widget.cameras
-                  .map<DropdownMenuItem<CameraDescription>>((value) {
-                return DropdownMenuItem<CameraDescription>(
-                  value: value,
-                  child: Text('${value.name}: ${value.lensDirection}'),
-                );
-              }).toList(),
-            ),
-          ),*/ //카메라 설정
-          /*ElevatedButton(
-            onPressed: controller == null
-                ? null
-                : () async {
-                    await controller!.startVideoRecording();
-                    await Future.delayed(Duration(seconds: 5));
-                    final file = await controller!.stopVideoRecording();
-                    final bytes = await file.readAsBytes();
-                    final uri = Uri.dataFromBytes(bytes,
-                        mimeType: 'video/webm;codecs=vp8');
-
-                    final link = AnchorElement(href: uri.toString());
-                    link.download = 'recording.webm';
-                    link.click();
-                    link.remove();
-                  },
-            child: Text('Record 5 second video.'),
-          ),
-          ElevatedButton(
-            onPressed: controller == null
-                ? null
-                : () async {
-                    final file = await controller!.takePicture();
-                    final bytes = await file.readAsBytes();
-
-                    final link = AnchorElement(
-                        href: Uri.dataFromBytes(bytes, mimeType: 'image/png')
-                            .toString());
-
-                    link.download = 'picture.png';
-                    link.click();
-                    link.remove();
-                  },
-            child: Text('Take picture.'),
-          )*/ //동영상 재생 및 사진촬영

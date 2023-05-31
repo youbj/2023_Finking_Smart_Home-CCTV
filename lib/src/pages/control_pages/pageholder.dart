@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:guardian/src/pages/LoginPage.dart';
+import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/homepage.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/webcam_screen.dart';
 
@@ -10,6 +11,7 @@ class Pageholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 5,
       child: Scaffold(
@@ -17,10 +19,75 @@ class Pageholder extends StatelessWidget {
           title: Text('Main Home'),
         ),
         body: TabBarView(children: [
-          WebcamScreen(), // 메인페이지
-          Center(
-            child: Text("music"),
-          ),
+          Container(
+            margin: EdgeInsets.all(50),
+            child: Column(
+              children: [
+                Container(width: size.width * 0.7, child: WebcamScreen()),
+                Container(
+                  width: size.width * 0.7,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll<Color>(Colors.white),
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => StreamPage()),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Home',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                '배터리 잔량 : 98%',
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                              ),
+                              Text(
+                                '로그 : 2023-05-31',
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                            child: IconButton(
+                              color: Colors.black54,
+                              icon: Icon(Icons.more_vert),
+                              iconSize: size.width * 0.05,
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ), // 메인페이지
+          StreamPage(),
           Center(
             child: Text("apps"),
           ),

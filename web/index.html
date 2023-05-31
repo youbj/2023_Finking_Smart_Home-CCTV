@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <!--
+    <head>
+        <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
 
@@ -14,47 +14,68 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
+        <base href="$FLUTTER_BASE_HREF" />
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+        <meta charset="UTF-8" />
+        <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+        <meta name="description" content="A new Flutter project." />
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="guardian">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+        <!-- iOS meta tags & icons -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-title" content="guardian" />
+        <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+        <meta
+            name="google-signin-client_id"
+            content="216264521269-f3i5t1062552egfau96gbv65m9o028as.apps.googleusercontent.com"
+        />
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="favicon.png" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+        <title>guardian</title>
+        <link rel="manifest" href="manifest.json" />
 
-  <title>guardian</title>
-  <link rel="manifest" href="manifest.json">
-
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    var serviceWorkerVersion = null;
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
-  <link rel="stylesheet" type="text/css" href="splash/style.css">
-</head>
-<body>
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
-      });
-    });
-  </script>
-</body>
+        <script>
+            // The value below is injected by flutter build, do not touch.
+            var serviceWorkerVersion = null;
+        </script>
+        <!-- This script adds the flutter initialization JS code -->
+        <script src="flutter.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="splash/style.css" />
+        <!-- The core Firebase JS SDK (always required for using any Firebase service) -->
+        <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+        <!-- Firebase Auth SDK -->
+        <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+    </head>
+    <body>
+        <script>
+            window.addEventListener("load", function (ev) {
+                // Download main.dart.js
+                _flutter.loader.loadEntrypoint({
+                    serviceWorker: {
+                        serviceWorkerVersion: serviceWorkerVersion,
+                    },
+                    onEntrypointLoaded: function (engineInitializer) {
+                        engineInitializer.initializeEngine().then(function (appRunner) {
+                            appRunner.runApp();
+                        });
+                    },
+                });
+            });
+        </script>
+        <script>
+            const firebaseConfig = {
+                apiKey: "AIzaSyAejpiu0ccBH5peIn5YhYbX5Sqi4UZ0TNY",
+                authDomain: "home-guardian-1b425.firebaseapp.com",
+                projectId: "home-guardian-1b425",
+                storageBucket: "home-guardian-1b425.appspot.com",
+                messagingSenderId: "216264521269",
+                appId: "1:216264521269:web:6bdcfd55f15e1b2189237c",
+                measurementId: "G-HXR01TNPJP",
+            };
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+        </script>
+        <script src="main.dart.js" type="application/javascript"></script>
+    </body>
 </html>

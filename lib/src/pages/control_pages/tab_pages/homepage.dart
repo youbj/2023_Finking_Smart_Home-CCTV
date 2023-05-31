@@ -1,49 +1,29 @@
-
 import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:guardian/src/dio_server.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Container(
-          margin: EdgeInsets.all(10),
-          width: double.infinity,
-          height: 300,
-          color: Colors.black,
-          child: Text(
-            "Streaming 1",
-            style: TextStyle(color: Colors.white, fontSize: 30),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(10),
-          width: double.infinity,
-          height: 300,
-          color: Colors.amber,
-          child: Text(
-            "Streaming 2",
-            style: TextStyle(color: Colors.white, fontSize: 30),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(10),
-          width: double.infinity,
-          height: 300,
-          color: Colors.black,
-          child: Text(
-            "Streaming 3",
-            style: TextStyle(color: Colors.white, fontSize: 30),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ]),
+    var size = MediaQuery.of(context).size;
+    final List<String> entries = <String>['a', 'b', 'c', 'd'];
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: size.height * 1,
+        child: ListView.builder(
+            itemCount: entries.length,
+            itemBuilder: (context, index) {
+              return Container(
+                child: Center(
+                  child: Text('순서대로 ${entries[index]}'),
+                ),
+              );
+            }),
+      ),
     );
   }
 }

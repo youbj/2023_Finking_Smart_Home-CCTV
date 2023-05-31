@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:guardian/src/pages/LoginPage.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/homepage.dart';
+import 'package:guardian/src/pages/control_pages/tab_pages/webcam_screen.dart';
 
 class Pageholder extends StatelessWidget {
   const Pageholder({super.key});
@@ -14,7 +17,7 @@ class Pageholder extends StatelessWidget {
           title: Text('Main Home'),
         ),
         body: TabBarView(children: [
-          Homepage(), // 메인페이지
+          WebcamScreen(), // 메인페이지
           Center(
             child: Text("music"),
           ),
@@ -28,6 +31,10 @@ class Pageholder extends StatelessWidget {
               child: ElevatedButton(
             onPressed: () {
               FirebaseAuth.instance.signOut();
+              GoogleSignIn().signOut();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => LoginWidget(),
+              ));
             },
             child: Text('LogOut'),
           ))

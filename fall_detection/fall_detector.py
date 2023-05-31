@@ -11,6 +11,8 @@ from helpers import last_ip
 import os
 import matplotlib.pyplot as plt
 
+
+
 try:
     mp.set_start_method('spawn')
 except RuntimeError:
@@ -149,3 +151,4 @@ class FallDetector:
 if __name__ == "__main__":
     f = FallDetector()
     f.begin()
+    

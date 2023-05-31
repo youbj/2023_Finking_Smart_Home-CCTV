@@ -2,6 +2,7 @@ from enum import IntEnum, unique
 from typing import List
 import cv2
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
 
 @unique
@@ -59,19 +60,19 @@ UNMATCHED_COLOR = (180, 119, 31)
 #     20: "None"
 # }
 activity_dict = {
-    1.0: "Falling forward using hands",
-    2.0: "Falling forward using knees",
-    3: "Falling backwards",
-    4: "Falling sideward",
-    5: "FALL",
-    6: "Normal",
-    7: "Normal",
-    8: "Normal",
-    9: "Normal",
-    10: "Normal",
-    11: "Normal",
-    12: "FALL Warning",
-    20: "None"
+    1.0: "넘어짐이 감지되었습니다!",
+    2.0: "넘어짐이 감지되었습니다!",
+    3: "넘어짐이 감지되었습니다!",
+    4: "넘어짐이 감지되었습니다!",
+    5: "넘어짐이 감지되었습니다!",
+    6: "정상입니다",
+    7: "정상입니다",
+    8: "정상입니다",
+    9: "정상입니다",
+    10: "정상입니다",
+    11: "정상입니다",
+    12: "넘어짐이 예상되었습니다!",
+    20: "정상"
 }
 
 
@@ -86,17 +87,20 @@ def write_on_image(img: np.ndarray, text: str, color: List) -> np.ndarray:
                              borderType=cv2.BORDER_CONSTANT,
                              dst=None,
                              value=[255, 255, 255])
-    for i, line in enumerate(text.split('\n')):
-        y = 30 + i * 30
-        cv2.putText(img=img,
-                    text=line,
-                    org=(0, y),
-                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.7,
-                    color=color,
-                    thickness=2)
+    # Convert image to PIL format
+    pil_img = Image.fromarray(img)
+    draw = ImageDraw.Draw(pil_img)
+    font_path = "vis/font/NanumGothic.ttf"
+    font_size = 25
+    font = ImageFont.truetype(font_path, font_size)
+    line_height = font.getsize("한글")[1]
 
-    return img
+    for i, line in enumerate(text.split('\n')):
+        y = 15 + i * line_height  # 수정: 기존의 y 값 대신 line_height를 사용하여 줄 간격 설정
+        draw.text((0, y), line, font=font, fill=tuple(color))
+
+    img_with_text = np.array(pil_img)
+    return img_with_text
 
 
 def visualise(img: np.ndarray, keypoint_sets: List, width: int, height: int, vis_keypoints: bool = False,

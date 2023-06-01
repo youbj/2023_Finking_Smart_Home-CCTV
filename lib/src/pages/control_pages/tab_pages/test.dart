@@ -2,20 +2,17 @@ import 'dart:html';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:guardian/src/pages/control_pages/tab_pages/test.dart';
-
-import 'Streamingpage.dart';
 
 Future<void> main() async {
-  runApp(StreamPage());
+  runApp(Test());
 }
 
-class StreamPage extends StatefulWidget {
+class Test extends StatefulWidget {
   @override
-  _StreamPageState createState() => _StreamPageState();
+  _TestState createState() => _TestState();
 }
 
-class _StreamPageState extends State<StreamPage> {
+class _TestState extends State<Test> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,63 +134,7 @@ class _CameraViewState extends State<CameraView> {
     }
     var size = MediaQuery.of(context).size;
 
-    return Center(
-      child: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth < 800) {
-          return Column(children: [
-            Container(
-              color: Colors.black,
-              padding: EdgeInsets.fromLTRB(5, 70, 5, 70),
-              child: Container(
-                width: size.width * 1,
-                //height: size.height * 0.6,
-                child: AspectRatio(
-                    aspectRatio: 16 / 9, child: CameraPreview(controller!)),
-              ),
-            ),
-            Container(
-              height: size.height * 0.1,
-              margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => Test(),
-                    ));
-                  },
-                  child: Text('감지 모드 켜기'),
-                )
-              ]),
-            )
-          ]);
-        } else {
-          return Column(children: [
-            Container(
-              color: Colors.black,
-              padding: EdgeInsets.fromLTRB(5, 70, 5, 70),
-              child: Container(
-                height: size.height * 0.5,
-                //height: size.height * 0.6,
-                child: AspectRatio(
-                    aspectRatio: 16 / 9, child: CameraPreview(controller!)),
-              ),
-            ),
-            Container(
-              height: size.height * 0.1,
-              margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text('감지 모드 켜기'),
-                )
-              ]),
-            )
-          ]);
-        }
-      }),
-    );
+    return Center(child: CircularProgressIndicator());
   }
 }
 /*Material(

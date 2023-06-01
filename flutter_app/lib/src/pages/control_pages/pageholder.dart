@@ -87,7 +87,10 @@ class Pageholder extends StatelessWidget {
               ],
             ),
           ), // 메인페이지
-          StreamPage(),
+          
+          Center(
+            child: Text("apps"),
+          ),
           Center(
             child: Text("apps"),
           ),

@@ -1,9 +1,11 @@
 import 'dart:html';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import 'Streamingpage.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   runApp(StreamPage());
@@ -121,6 +123,26 @@ class _CameraViewState extends State<CameraView> {
     super.dispose();
   }
 
+  /* flutter에서 행동인식 수행하려고 만든거 */
+  final String baseUrl = 'http://127.0.0.1:5000';
+
+  void runFallDetector() async {
+    try {
+      final response = await http.get(Uri.parse('http://127.0.0.1:5000/run_fall_detector'));
+      if (response.statusCode == 200) {
+        // fall_detector.py 실행에 성공한 경우
+        print('Fall Detector is running!');
+      } else {
+        // fall_detector.py 실행에 실패한 경우
+        print('Failed to run Fall Detector!');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     if (error != null) {
@@ -156,7 +178,7 @@ class _CameraViewState extends State<CameraView> {
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: runFallDetector,
                   child: Text('감지 모드 켜기'),
                 )
               ]),
@@ -180,7 +202,7 @@ class _CameraViewState extends State<CameraView> {
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: runFallDetector,
                   child: Text('감지 모드 켜기'),
                 )
               ]),

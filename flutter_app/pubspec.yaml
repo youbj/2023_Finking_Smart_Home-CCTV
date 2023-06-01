@@ -43,6 +43,7 @@ dependencies:
     dio: ^5.1.2
     flutterfire_cli: ^0.2.7
     camera: ^0.9.4
+    http: ^0.13.4
 
 dev_dependencies:
     flutter_test:

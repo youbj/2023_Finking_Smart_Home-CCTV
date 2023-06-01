@@ -39,7 +39,7 @@ class LoginWidget extends StatelessWidget {
                   padding: EdgeInsets.fromLTRB(0, 50, 0, 50),
                   width: size.width * 0.7,
                   height: size.height * 0.7,
-                  child: Image.asset('assets/images/pda.png'),
+                  child: Image.asset('assets/images/Logo.png'),
                 ),
               ),
               SizedBox(

@@ -26,3 +26,5 @@ class App extends StatelessWidget {
 }
 
 //flutter run -d chrome --web-hostname localhost --web-port 5000
+
+//flutter pub run flutter_native_splash:create --> 첫 실행 전에 실행해야함.

@@ -23,7 +23,7 @@ class Pageholder extends StatelessWidget {
             margin: EdgeInsets.all(50),
             child: Column(
               children: [
-                Container(width: size.width * 0.7, child: WebcamScreen()),
+                //Container(width: size.width * 0.7, child: WebcamScreen()),
                 Container(
                   width: size.width * 0.7,
                   child: ElevatedButton(

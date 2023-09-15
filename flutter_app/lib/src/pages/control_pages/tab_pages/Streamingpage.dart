@@ -179,20 +179,20 @@ class _CameraViewState extends State<CameraView> {
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 ElevatedButton(
-                  onPressed: () {                    
+                  onPressed: () async {
+                    controller?.dispose();
+                    controller = null;
+                    await Future.delayed(Duration(seconds: 2));
                     runFallDetector();
                   },
                   child: Text('감지 모드 켜기'),
                 ),
-                SizedBox(width: 200,),
-                ElevatedButton(
-                                  onPressed: () {
-                                  // 웹캠 종료
-                                  controller?.dispose();
-                                  controller = null;
-                                  },
-                                  child: Text('웹캠 종료'),
-                                  )
+                /*ElevatedButton(
+                  onPressed: () {
+                    // 웹캠 종료
+                  },
+                  child: Text('웹캠 종료'),
+                )*/
               ]),
             )
           ]);

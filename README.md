@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# Finking_Smart_Home-CCTV
+YOLO를 사용하여 응급 상황, 위협 상황 등을 파악하는 스마트 홈 씨씨티비 
+=======
 # guardian
 
 A new Flutter project.
@@ -14,3 +18,4 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+>>>>>>> origin/yaan

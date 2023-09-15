@@ -6,8 +6,18 @@ import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/homepage.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/webcam_screen.dart';
 
-class Pageholder extends StatelessWidget {
-  const Pageholder({super.key});
+import '../../CustomStyle.dart';
+
+class Pageholder extends StatefulWidget {
+  const Pageholder({Key? key}) : super(key: key);
+
+  @override
+  _PageholderState createState() => _PageholderState();
+}
+
+class _PageholderState extends State<Pageholder> {
+  List<Widget> drawerItems = []; // ListTile을 저장하는 리스트
+  int itemCount = 0; // 현재 아이템 개수
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +27,32 @@ class Pageholder extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Main Home'),
+        ),
+        endDrawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                child: Text('Header'),
+                decoration: BoxDecoration(color: Colors.amber),
+              ),
+              // 동적으로 생성된 ListTile 목록
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: drawerItems.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        drawerItems.removeAt(index);
+                      });
+                    },
+                    child: drawerItems[index],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
         body: TabBarView(children: [
           Container(
@@ -87,15 +123,43 @@ class Pageholder extends StatelessWidget {
               ],
             ),
           ), // 메인페이지
-          
+
           Center(
             child: Text("apps"),
           ),
           Center(
-            child: Text("apps"),
+            child: ElevatedButton(
+              onPressed: () {
+                // 버튼을 누를 때마다 ListTile 추가
+                setState(() {
+                  drawerItems.add(
+                    ListTile(
+                      title: Text('Item ${itemCount + 1}'),
+                    ),
+                  );
+                  itemCount++;
+                });
+              },
+              child: Text('Add ListTile to Drawer'),
+            ),
           ),
-          Center(
-            child: Text("settings"),
+          ListView(
+            padding: const EdgeInsets.all(10),
+            children: [
+              Card(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      title: Text('예시용'),
+                      subtitle: Text(
+                        '가격 원',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           Center(
               child: ElevatedButton(

@@ -1,4 +1,3 @@
-
 import 'dart:html';
 import 'dart:io';
 
@@ -125,11 +124,12 @@ class _CameraViewState extends State<CameraView> {
   }
 
   /* flutter에서 행동인식 수행하려고 만든거 */
-  final String baseUrl = 'http://127.0.0.1:5000';
+  final String baseUrl = 'http://127.0.0.1:5001';
 
   void runFallDetector() async {
     try {
-      final response = await http.get(Uri.parse('http://127.0.0.1:5000/run_fall_detector'));
+      final response =
+          await http.get(Uri.parse('http://127.0.0.1:5001/run_fall_detector'));
       if (response.statusCode == 200) {
         // fall_detector.py 실행에 성공한 경우
         print('Fall Detector is running!');
@@ -141,8 +141,6 @@ class _CameraViewState extends State<CameraView> {
       print('Error: $e');
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +185,32 @@ class _CameraViewState extends State<CameraView> {
                   },
                   child: Text('감지 모드 켜기'),
                 ),
+                Material(
+                  child: DropdownButton<CameraDescription>(
+                    value: cameraDescription,
+                    icon: const Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    onChanged: (CameraDescription? newValue) async {
+                      if (controller != null) {
+                        await controller!.dispose();
+                      }
+                      setState(() {
+                        controller = null;
+                        cameraDescription = newValue!;
+                      });
+
+                      initCam(newValue!);
+                    },
+                    items: widget.cameras
+                        .map<DropdownMenuItem<CameraDescription>>((value) {
+                      return DropdownMenuItem<CameraDescription>(
+                        value: value,
+                        child: Text('${value.name}: ${value.lensDirection}'),
+                      );
+                    }).toList(),
+                  ),
+                ),
                 /*ElevatedButton(
                   onPressed: () {
                     // 웹캠 종료
@@ -210,15 +234,46 @@ class _CameraViewState extends State<CameraView> {
             ),
             Container(
               height: size.height * 0.1,
-              margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
+              margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 ElevatedButton(
-                  onPressed: runFallDetector,
+                  onPressed: () async {
+                    controller?.dispose();
+                    controller = null;
+                    await Future.delayed(Duration(seconds: 2));
+                    runFallDetector();
+                  },
                   child: Text('감지 모드 켜기'),
-                )
+                ),
+                Material(
+                  child: DropdownButton<CameraDescription>(
+                    value: cameraDescription,
+                    icon: const Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    onChanged: (CameraDescription? newValue) async {
+                      if (controller != null) {
+                        await controller!.dispose();
+                      }
+                      setState(() {
+                        controller = null;
+                        cameraDescription = newValue!;
+                      });
+
+                      initCam(newValue!);
+                    },
+                    items: widget.cameras
+                        .map<DropdownMenuItem<CameraDescription>>((value) {
+                      return DropdownMenuItem<CameraDescription>(
+                        value: value,
+                        child: Text('${value.name}: ${value.lensDirection}'),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ]),
-            )
+            ),
           ]);
         }
       }),

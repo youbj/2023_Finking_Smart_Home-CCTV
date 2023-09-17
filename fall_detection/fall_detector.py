@@ -97,7 +97,7 @@ class FallDetector:
         
         if self.args.num_cams == 1:
             if self.args.video is None:
-                argss[0].video = 0
+                argss[0].video = 1
             process1 = mp.Process(target=extract_keypoints_parallel,
                                   args=(queues[0], argss[0], counter1, counter2, self.consecutive_frames, e))
             process1.start()

@@ -20,8 +20,28 @@ class _StreamPageState extends State<StreamPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('HOME'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppBar(
+              iconTheme: IconThemeData(color: Colors.blue),
+              backgroundColor: Color.fromARGB(255, 250, 250, 250),
+              title: Container(
+                padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                child: Text(
+                  'Home`s Cam',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              elevation: 0.0,
+            )
+          ],
+        ),
       ),
       body: AppBody(),
     );
@@ -124,12 +144,12 @@ class _CameraViewState extends State<CameraView> {
   }
 
   /* flutter에서 행동인식 수행하려고 만든거 */
-  final String baseUrl = 'http://127.0.0.1:5001';
+  final String baseUrl = 'http://127.0.0.1:5000';
 
   void runFallDetector() async {
     try {
       final response =
-          await http.get(Uri.parse('http://127.0.0.1:5001/run_fall_detector'));
+          await http.get(Uri.parse('http://127.0.0.1:5000/run_fall_detector'));
       if (response.statusCode == 200) {
         // fall_detector.py 실행에 성공한 경우
         print('Fall Detector is running!');
@@ -184,6 +204,9 @@ class _CameraViewState extends State<CameraView> {
                     runFallDetector();
                   },
                   child: Text('감지 모드 켜기'),
+                ),
+                SizedBox(
+                  width: 10,
                 ),
                 Material(
                   child: DropdownButton<CameraDescription>(
@@ -245,6 +268,9 @@ class _CameraViewState extends State<CameraView> {
                     runFallDetector();
                   },
                   child: Text('감지 모드 켜기'),
+                ),
+                SizedBox(
+                  width: 10,
                 ),
                 Material(
                   child: DropdownButton<CameraDescription>(

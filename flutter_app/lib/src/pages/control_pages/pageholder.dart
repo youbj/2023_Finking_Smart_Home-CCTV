@@ -35,19 +35,53 @@ class _PageholderState extends State<Pageholder> {
 
   @override
   Widget build(BuildContext context) {
+    var scaffoldKey = GlobalKey<ScaffoldState>();
     var size = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Main Home'),
-          elevation: 0.0,
-          // actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppBar(
+                  backgroundColor: Color.fromARGB(255, 250, 250, 250),
+                  title: Container(
+                    padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                    child: Text(
+                      'Home Guardian',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  elevation: 0.0,
+                  // actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 30, 0),
+                      child: Builder(
+                        builder: (context) => IconButton(
+                          color: Colors.blue,
+                          icon: Icon(
+                            Icons.notifications,
+                            size: 30,
+                          ),
+                          onPressed: () => Scaffold.of(context).openEndDrawer(),
+                        ),
+                      ),
+                    ),
+                  ]),
+            ],
+          ),
         ),
         endDrawer: _buildDrawer(),
         body: TabBarView(children: [
           /** 메인페이지 */
           Container(
+            color: Color.fromARGB(255, 250, 250, 250),
             margin: EdgeInsets.all(50),
             child: Column(
               children: [
@@ -64,6 +98,21 @@ class _PageholderState extends State<Pageholder> {
                       ),
                     ),
                     onPressed: () {
+                      // 버튼을 누를 때마다 ListTile 추가
+                      setState(() {
+                        drawerItems.add(
+                          Container(
+                            padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                            child: ListTile(
+                              leading: Icon(Icons.security),
+                              title: Text(
+                                '$currentTime' '에 감지 기록이 발생하였습니다.',
+                              ),
+                            ),
+                          ),
+                        );
+                        itemCount++;
+                      });
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => StreamPage()),
@@ -102,7 +151,6 @@ class _PageholderState extends State<Pageholder> {
                             child: IconButton(
                               color: Colors.black54,
                               icon: Icon(Icons.more_vert),
-                              iconSize: size.width * 0.05,
                               onPressed: () {},
                             ),
                           ),
@@ -128,9 +176,13 @@ class _PageholderState extends State<Pageholder> {
                   // 버튼을 누를 때마다 ListTile 추가
                   setState(() {
                     drawerItems.add(
-                      ListTile(
-                        title: Text(
-                          'Time: ' '$currentTime' '에 감지 기록이 발생하였습니다.',
+                      Container(
+                        padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                        child: ListTile(
+                          leading: Icon(Icons.security),
+                          title: Text(
+                            'Time: ' '$currentTime' '에 감지 기록이 발생하였습니다.',
+                          ),
                         ),
                       ),
                     );

@@ -19,7 +19,7 @@ class App extends StatelessWidget {
             );
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            return First();
+            return App();
           }
           return CircularProgressIndicator();
         });

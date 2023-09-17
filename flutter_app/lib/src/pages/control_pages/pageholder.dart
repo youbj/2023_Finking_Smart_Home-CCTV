@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
 import '../widgets/common_switch.dart';
+import 'package:intl/intl.dart';
 
 class Pageholder extends StatefulWidget {
   const Pageholder({Key? key}) : super(key: key);
@@ -12,6 +13,25 @@ class Pageholder extends StatefulWidget {
 class _PageholderState extends State<Pageholder> {
   List<Widget> drawerItems = []; // ListTile을 저장하는 리스트
   int itemCount = 0; // 현재 아이템 개수
+  String currentTime = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // initState에서 현재 시간을 업데이트합니다.
+    updateTime();
+  }
+
+  void updateTime() {
+    final now = DateTime.now();
+    final formatter = DateFormat('HH:mm:ss'); // 시간 형식을 지정합니다.
+    setState(() {
+      currentTime = formatter.format(now); // 현재 시간을 포맷팅하여 변수에 저장합니다.
+    });
+
+    // 1초마다 현재 시간을 업데이트합니다.
+    Future.delayed(Duration(seconds: 1), updateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +129,9 @@ class _PageholderState extends State<Pageholder> {
                   setState(() {
                     drawerItems.add(
                       ListTile(
-                        title: Text('Item ${itemCount + 1}'),
+                        title: Text(
+                          'Time: ' '$currentTime' '에 감지 기록이 발생하였습니다.',
+                        ),
                       ),
                     );
                     itemCount++;
@@ -274,9 +296,30 @@ class _PageholderState extends State<Pageholder> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
-            child: Text('Header'),
-            decoration: BoxDecoration(color: Colors.amber),
+          Container(
+            height: 100,
+            child: Theme(
+              data:
+                  Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: DrawerHeader(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                      child: Text(
+                        'Event',
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           _buildDynamicListTiles(),
         ],
@@ -312,14 +355,14 @@ Widget _buildBottomNavigationBar() {
       indicator: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: Colors.red,
+            color: Colors.blue,
             width: 2,
           ),
         ),
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       indicatorWeight: 3,
-      labelColor: Colors.red,
+      labelColor: Colors.blue,
       unselectedLabelColor: Colors.black38,
       labelStyle: TextStyle(fontSize: 13),
       tabs: [

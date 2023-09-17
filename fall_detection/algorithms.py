@@ -18,10 +18,10 @@ import math
 
 
 
-def get_source(args):
+def get_source(args): #함수는 카메라 또는 비디오 소스를 가져오고 관련된 데이터 프레임을 반환
     tagged_df = None
     if args.video is None:
-        cam = cv2.VideoCapture(0)
+        cam = cv2.VideoCapture(1)
     else:
         logging.debug(f'Video source: {args.video}')
         cam = cv2.VideoCapture(args.video)
@@ -48,6 +48,7 @@ def resize(img, resize, resolution):
     return width, height, width_height
 
 
+#이미지에서 키포인트를 추출하는 작업을 수행합니다. 카메라 또는 비디오 소스를 가져오고 예외를 처리
 def extract_keypoints_parallel(queue, args, self_counter, other_counter, consecutive_frames, event):
     try:
         cam, tagged_df = get_source(args)
@@ -128,7 +129,7 @@ def extract_keypoints_parallel(queue, args, self_counter, other_counter, consecu
 
 ###################################################### Post human estimation ###########################################################
 
-
+#이미지에 키포인트와 텍스트를 그립니다
 def show_tracked_img(img_dict, ip_set, num_matched, output_video, args):
     img = img_dict["img"]
     tagged_df = img_dict["tagged_df"]
@@ -161,7 +162,7 @@ def show_tracked_img(img_dict, ip_set, num_matched, output_video, args):
         output_video.write(img)
     return img, output_video
 
-
+# 함수는 잘못 매치된 키포인트를 제거 (넘어짐 관련)
 def remove_wrongly_matched(matched_1, matched_2):
 
     unmatched_idxs = []
@@ -176,7 +177,7 @@ def remove_wrongly_matched(matched_1, matched_2):
 
     return unmatched_idxs
 
-
+#함수는 잘못 매치된 키포인트를 다시 매치 (넘어짐 관련)
 def match_unmatched(unmatched_1, unmatched_2, lstm_set1, lstm_set2, num_matched):
 
     new_matched_1 = []
@@ -245,12 +246,12 @@ def alg2_sequential(queues, argss, consecutive_frames, event):
     model.eval()
     output_videos = [None for _ in range(argss[0].num_cams)]
     t0 = time.time()
-    feature_plotters = [[[], [], [], [], []] for _ in range(argss[0].num_cams)]
-    ip_sets = [[] for _ in range(argss[0].num_cams)]
-    lstm_sets = [[] for _ in range(argss[0].num_cams)]
+    feature_plotters = [[[], [], [], [], []] for _ in range(argss[1].num_cams)]
+    ip_sets = [[] for _ in range(argss[1].num_cams)]
+    lstm_sets = [[] for _ in range(argss[1].num_cams)]
     max_length_mat = 300
     num_matched = 0
-    if not argss[0].plot_graph:
+    if not argss[1].plot_graph:
         max_length_mat = consecutive_frames
     else:
         f, ax = plt.subplots()
@@ -273,15 +274,15 @@ def alg2_sequential(queues, argss, consecutive_frames, event):
                     event.set()
 
             kp_frames = [dict_frame["keypoint_sets"] for dict_frame in dict_frames]
-            if argss[0].num_cams == 1:
+            if argss[1].num_cams == 1:
                 num_matched, new_num, indxs_unmatched = match_ip(ip_sets[0], kp_frames[0], lstm_sets[0], num_matched, max_length_mat)
                 valid1_idxs, prediction = get_all_features(ip_sets[0], lstm_sets[0], model)
                 dict_frames[0]["tagged_df"]["text"] += f" Pred: {activity_dict[prediction+5]}"
-                img, output_videos[0] = show_tracked_img(dict_frames[0], ip_sets[0], num_matched, output_videos[0], argss[0])
+                img, output_videos[0] = show_tracked_img(dict_frames[0], ip_sets[0], num_matched, output_videos[1], argss[1])
                 # print(img1.shape)
                 cv2.imshow(window_names[0], img)
 
-            elif argss[0].num_cams == 2:
+            elif argss[1].num_cams == 2:
                 num_matched, new_num, indxs_unmatched1 = match_ip(ip_sets[0], kp_frames[0], lstm_sets[0], num_matched, max_length_mat)
                 assert(new_num == len(ip_sets[0]))
                 for i in sorted(indxs_unmatched1, reverse=True):
@@ -353,7 +354,7 @@ def alg2_sequential(queues, argss, consecutive_frames, event):
                 valid2_idxs, prediction2 = get_all_features(ip_sets[1], lstm_sets[1], model)
                 dict_frames[0]["tagged_df"]["text"] += f" Pred: {activity_dict[prediction1+5]}"
                 dict_frames[1]["tagged_df"]["text"] += f" Pred: {activity_dict[prediction2+5]}"
-                img1, output_videos[0] = show_tracked_img(dict_frames[0], ip_sets[0], num_matched, output_videos[0], argss[0])
+                img1, output_videos[0] = show_tracked_img(dict_frames[0], ip_sets[0], num_matched, output_videos[1], argss[1])
                 img2, output_videos[1] = show_tracked_img(dict_frames[1], ip_sets[1], num_matched, output_videos[1], argss[1])
                 # print(img1.shape)
                 cv2.imshow(window_names[0], img1)

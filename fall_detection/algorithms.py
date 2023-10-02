@@ -17,7 +17,10 @@ import torch
 import math
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b2b661361de26959ce687b06e32768de1de99c92
 def get_source(args):
     tagged_df = None
     if args.video is None:

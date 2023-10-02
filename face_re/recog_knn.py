@@ -31,7 +31,11 @@ def prepare_dataset():
     labels = []
 
     # 학습에 사용할 사진 경로 및 클래스 레이블 지정
+<<<<<<< HEAD
     image_paths = glob.glob('C:/Users/YooByeongJu/Desktop/2023_Finking_Smart_Home-CCTV/images/*.jpg') # 사진 경로 입력하면 됨 
+=======
+    image_paths = glob.glob('[사진 경로를 입력하면 됨]]/images/*.jpg') # 사진 경로 입력하면 됨 
+>>>>>>> b2b661361de26959ce687b06e32768de1de99c92
     class_labels = []
 
     for x in range(len(image_paths)): # 이건 나 혼자라서 하나의 이름만 계속 입력했지만 사용할 때는 각자 사진이 들어간 만큼 이름을 입력해줘야함
@@ -68,12 +72,18 @@ def calculate_face_region(landmarks): # 이건 얼굴의 좌표 구하는 거라
 
 '''여기서 부터 진짜 시작'''
 dataset, labels = prepare_dataset() # 데이터셋과 라벨 불러오고
+<<<<<<< HEAD
 print('라벨화 완료')
 dataset = dataset.reshape(dataset.shape[0], -1)
 knn = KNeighborsClassifier(n_neighbors=3)
 print('분류 완료')
 knn.fit(dataset, labels)
 print('knn 완료')
+=======
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(dataset, labels)
+
+>>>>>>> b2b661361de26959ce687b06e32768de1de99c92
 cap = cv2.VideoCapture(0) # 라이브로 영상 나온다길래 웹캠에서 하는 형식으로 가져옴 동영상부분으로 필요하면 화요일 이후에 수정 가능
 
 while cap.isOpened():
@@ -101,7 +111,11 @@ while cap.isOpened():
             distances, indices = knn.kneighbors(face_landmarks)
             closest_label = labels[indices[0][0]]
             
+<<<<<<< HEAD
             threshold = 1 # 임계값으로 데이터에서 얻은 특징과 웹캠에서 실시간으로 얻은 특징이 얼마나 다른가를 나타냄
+=======
+            threshold = 0.8 # 임계값으로 데이터에서 얻은 특징과 웹캠에서 실시간으로 얻은 특징이 얼마나 다른가를 나타냄
+>>>>>>> b2b661361de26959ce687b06e32768de1de99c92
                             # 1에 가까울수록 기준이 엄격해지고 0에 가까울수록 관대해 Unknown이 될 확률이 높다 조절 가능
             
             if distances[0][0] > threshold:

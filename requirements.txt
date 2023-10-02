@@ -6,6 +6,10 @@ chardet
 cycler
 dataclasses
 future
+<<<<<<< HEAD
+=======
+glob
+>>>>>>> b2b661361de26959ce687b06e32768de1de99c92
 idna
 kiwisolver
 matplotlib

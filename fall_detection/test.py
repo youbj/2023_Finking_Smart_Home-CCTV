@@ -58,4 +58,10 @@ def run_fall_detector():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-####
+# 1.데이터 베이스 생성하기 //CREATE DATABASE dbname;
+# 2. 데이터 베이스 선택하기 // use dbname
+# 3. 테이블 생성하고 id,camera_start_time값 생성하기   //  CREATE TABLE dbname (
+#                   id INT  PRIMARY KEY,
+#                   camera_start_time VARCHAR(255) NOT NULL
+#                       );
+# 이코드의 데이터베이스name: flask / 테이블 name: camera_log / 필드값: id, camera_start_time

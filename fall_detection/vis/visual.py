@@ -2,10 +2,7 @@ from enum import IntEnum, unique
 from typing import List
 import cv2
 import numpy as np
-<<<<<<< HEAD
 from PIL import Image, ImageDraw, ImageFont
-=======
->>>>>>> b2b661361de26959ce687b06e32768de1de99c92
 
 
 @unique

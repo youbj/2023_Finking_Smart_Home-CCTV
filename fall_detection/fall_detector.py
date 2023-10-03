@@ -10,12 +10,6 @@ from algorithms import *
 from helpers import last_ip
 import os
 import matplotlib.pyplot as plt
-<<<<<<< HEAD
-
-=======
-#commit test
-#commit test
->>>>>>> b2b661361de26959ce687b06e32768de1de99c92
 
 
 try:
@@ -113,7 +107,6 @@ class FallDetector:
                                                                     self.consecutive_frames, e))
                 process2.start()
             process1.join()
-<<<<<<< HEAD
         elif self.args.num_cams == 2: #여기는 카메라가 2대 이상일 때 사용
             if self.args.video is None:
                 argss[0].video = 0
@@ -144,38 +137,6 @@ class FallDetector:
                 process2.start()
             process1_1.join()
             process1_2.join()
-=======
-        # elif self.args.num_cams == 2: #여기는 카메라가 2대 이상일 때 사용
-        #     if self.args.video is None:
-        #         argss[0].video = 0
-        #         argss[1].video = 1
-        #     else:
-        #         try:
-        #             vid_name = self.args.video.split('.')
-        #             argss[0].video = ''.join(vid_name[:-1])+'1.'+vid_name[-1]
-        #             argss[1].video = ''.join(vid_name[:-1])+'2.'+vid_name[-1]
-        #             print('Video 1:', argss[0].video)
-        #             print('Video 2:', argss[1].video)
-        #         except Exception as exep:
-        #             print('Error: argument --video not properly set')
-        #             print('For 2 video fall detection(--num_cams=2), save your videos as abc1.xyz & abc2.xyz and set --video=abc.xyz')
-        #             return
-        #     process1_1 = mp.Process(target=extract_keypoints_parallel,
-        #                             args=(queues[0], argss[0], counter1, counter2, self.consecutive_frames, e))
-        #     process1_2 = mp.Process(target=extract_keypoints_parallel,
-        #                             args=(queues[1], argss[1], counter2, counter1, self.consecutive_frames, e))
-        #     process1_1.start()
-        #     process1_2.start()
-        #     if self.args.coco_points:
-        #         process1_1.join()
-        #         process1_2.join()
-        #     else:
-        #         process2 = mp.Process(target=alg2_sequential, args=(queues, argss,
-        #                                                             self.consecutive_frames, e))
-        #         process2.start()
-        #     process1_1.join()
-        #     process1_2.join()
->>>>>>> b2b661361de26959ce687b06e32768de1de99c92
         else:
             print('More than 2 cameras are currently not supported')
             return

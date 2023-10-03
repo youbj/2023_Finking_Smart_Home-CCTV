@@ -26,7 +26,7 @@ def run_fall_detector():
     cursor = connection.cursor()
 
     # 이미 해당 id로 레코드가 있는지 확인
-    check_query = "SELECT * FROM camera_log WHERE id = %s"
+    check_query = "SELECT * FROM camera_log WHERE id = %s" ##테이블 확인하기 
     check_values = ("3801",)
     cursor.execute(check_query, check_values)
     existing_record = cursor.fetchone()

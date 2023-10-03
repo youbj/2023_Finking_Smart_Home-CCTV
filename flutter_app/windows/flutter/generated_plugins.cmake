@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   fullscreen_window
+  permission_handler_windows
   video_player_win
 )
 

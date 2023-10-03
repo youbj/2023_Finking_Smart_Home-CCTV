@@ -30,7 +30,7 @@ class First extends StatelessWidget {
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 Container(
                   height: size.height * 0.92,
-                  width: size.width * 0.7,
+                  width: size.width * 0.8,
                   padding: EdgeInsets.fromLTRB(0, 100, 50, 0),
                   child: Column(
                     children: [

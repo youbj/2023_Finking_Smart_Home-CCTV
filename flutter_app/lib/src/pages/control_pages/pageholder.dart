@@ -1,7 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
 import '../widgets/common_switch.dart';
 import 'package:intl/intl.dart';
+
+import 'tab_pages/androidcam.dart';
 
 class Pageholder extends StatefulWidget {
   const Pageholder({Key? key}) : super(key: key);
@@ -48,7 +51,7 @@ class _PageholderState extends State<Pageholder> {
               AppBar(
                   backgroundColor: Color.fromARGB(255, 250, 250, 250),
                   title: Container(
-                    padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+                    padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                     child: Text(
                       'Home Guardian',
                       style: TextStyle(
@@ -61,7 +64,7 @@ class _PageholderState extends State<Pageholder> {
                   // actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
                   actions: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 30, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
                       child: Builder(
                         builder: (context) => IconButton(
                           color: Colors.blue,
@@ -115,7 +118,7 @@ class _PageholderState extends State<Pageholder> {
                       });
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => StreamPage()),
+                        MaterialPageRoute(builder: (context) => CameraApp()),
                       );
                     },
                     child: Container(

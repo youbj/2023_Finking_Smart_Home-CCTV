@@ -1,8 +1,8 @@
-import 'package:guardian/firebase_options.dart';
-import 'package:guardian/src/pages/control_pages/pageholder.dart';
-import 'package:guardian/src/pages/fisrt.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:guardian/src/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:guardian/src/pages/register_login/fisrt.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

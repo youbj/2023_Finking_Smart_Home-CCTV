@@ -1,8 +1,7 @@
 import 'package:guardian/src/App.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/pageholder.dart';
-import 'package:guardian/src/pages/fisrt.dart';
-import 'package:guardian/src/pages/intro.dart';
+import 'package:guardian/src/intro.dart';
 
 void main() => runApp(MyApp());
 

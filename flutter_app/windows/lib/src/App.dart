@@ -1,6 +1,6 @@
-import 'package:guardian/src/pages/fisrt.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:guardian/src/pages/register_login/fisrt.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

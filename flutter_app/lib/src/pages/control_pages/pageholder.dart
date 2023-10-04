@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
-import '../widgets/common_switch.dart';
+import '../../widgets/common_switch.dart';
 import 'package:intl/intl.dart';
 
 import 'tab_pages/androidcam.dart';

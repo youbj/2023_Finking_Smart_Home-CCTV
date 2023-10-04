@@ -1,12 +1,12 @@
-
-import 'dart:html';
 import 'dart:io';
-
+import 'package:universal_html/src/html.dart' as universal_html;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:universal_html/html.dart';
 import 'Streamingpage.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/widgets/text.dart' as flutter;
 
 Future<void> main() async {
   runApp(StreamPage());
@@ -21,8 +21,28 @@ class _StreamPageState extends State<StreamPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('HOME'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppBar(
+              iconTheme: IconThemeData(color: Colors.blue),
+              backgroundColor: Color.fromARGB(255, 250, 250, 250),
+              title: Container(
+                padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                child: flutter.Text(
+                  'Home`s Cam',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              elevation: 0.0,
+            )
+          ],
+        ),
       ),
       body: AppBody(),
     );
@@ -67,16 +87,16 @@ class _AppBodyState extends State<AppBody> {
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      return Center(child: Text('오류 발생: $error'));
+      return Center(child: flutter.Text('오류 발생: $error'));
     }
     if (!cameraAccess) {
-      return Center(child: Text('아직 카메라 접근 권한이 허용되지 않았습니다.'));
+      return Center(child: flutter.Text('아직 카메라 접근 권한이 허용되지 않았습니다.'));
     }
     if (cameras == null) {
-      return Center(child: Text('카메라 목록을 가져오는 중입니다.'));
+      return Center(child: flutter.Text('카메라 목록을 가져오는 중입니다.'));
     }
     if (cameras!.isEmpty) {
-      return Center(child: Text('사용 가능한 카메라가 없습니다.'));
+      return Center(child: flutter.Text('사용 가능한 카메라가 없습니다.'));
     }
     return CameraView(cameras: cameras!);
   }
@@ -125,11 +145,12 @@ class _CameraViewState extends State<CameraView> {
   }
 
   /* flutter에서 행동인식 수행하려고 만든거 */
-  final String baseUrl = 'http://127.0.0.1:5000';
+  final String baseUrl = 'http://127.0.0.1:5001';
 
   void runFallDetector() async {
     try {
-      final response = await http.get(Uri.parse('http://127.0.0.1:5000/run_fall_detector'));
+      final response =
+          await http.get(Uri.parse('http://127.0.0.1:5001/run_fall_detector'));
       if (response.statusCode == 200) {
         // fall_detector.py 실행에 성공한 경우
         print('Fall Detector is running!');
@@ -142,20 +163,18 @@ class _CameraViewState extends State<CameraView> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     if (error != null) {
       return Center(
-        child: Text('Initializing error: $error\nCamera list:'),
+        child: flutter.Text('Initializing error: $error\nCamera list:'),
       );
     }
     if (controller == null) {
-      return Center(child: Text('Loading controller...'));
+      return Center(child: flutter.Text('Loading controller...'));
     }
     if (!controller!.value.isInitialized) {
-      return Center(child: Text('Initializing camera...'));
+      return Center(child: flutter.Text('Initializing camera...'));
     }
     var size = MediaQuery.of(context).size;
 
@@ -185,7 +204,37 @@ class _CameraViewState extends State<CameraView> {
                     await Future.delayed(Duration(seconds: 2));
                     runFallDetector();
                   },
-                  child: Text('감지 모드 켜기'),
+                  child: flutter.Text('감지 모드 켜기'),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Material(
+                  child: DropdownButton<CameraDescription>(
+                    value: cameraDescription,
+                    icon: const Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    onChanged: (CameraDescription? newValue) async {
+                      if (controller != null) {
+                        await controller!.dispose();
+                      }
+                      setState(() {
+                        controller = null;
+                        cameraDescription = newValue!;
+                      });
+
+                      initCam(newValue!);
+                    },
+                    items: widget.cameras
+                        .map<DropdownMenuItem<CameraDescription>>((value) {
+                      return DropdownMenuItem<CameraDescription>(
+                        value: value,
+                        child: flutter.Text(
+                            '${value.name}: ${value.lensDirection}'),
+                      );
+                    }).toList(),
+                  ),
                 ),
                 /*ElevatedButton(
                   onPressed: () {
@@ -210,15 +259,50 @@ class _CameraViewState extends State<CameraView> {
             ),
             Container(
               height: size.height * 0.1,
-              margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
+              margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 ElevatedButton(
-                  onPressed: runFallDetector,
-                  child: Text('감지 모드 켜기'),
-                )
+                  onPressed: () async {
+                    controller?.dispose();
+                    controller = null;
+                    await Future.delayed(Duration(seconds: 2));
+                    runFallDetector();
+                  },
+                  child: flutter.Text('감지 모드 켜기'),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Material(
+                  child: DropdownButton<CameraDescription>(
+                    value: cameraDescription,
+                    icon: const Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    onChanged: (CameraDescription? newValue) async {
+                      if (controller != null) {
+                        await controller!.dispose();
+                      }
+                      setState(() {
+                        controller = null;
+                        cameraDescription = newValue!;
+                      });
+
+                      initCam(newValue!);
+                    },
+                    items: widget.cameras
+                        .map<DropdownMenuItem<CameraDescription>>((value) {
+                      return DropdownMenuItem<CameraDescription>(
+                        value: value,
+                        child: flutter.Text(
+                            '${value.name}: ${value.lensDirection}'),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ]),
-            )
+            ),
           ]);
         }
       }),

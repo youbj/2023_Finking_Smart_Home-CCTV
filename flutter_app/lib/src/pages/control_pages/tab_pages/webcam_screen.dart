@@ -1,6 +1,7 @@
-import 'dart:html';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart';
+import 'package:flutter/src/widgets/text.dart' as flutter;
 
 Future<void> main() async {
   runApp(WebcamScreen());
@@ -51,16 +52,16 @@ class _AppBodyState extends State<AppBody> {
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      return Center(child: Text('오류 발생: $error'));
+      return Center(child: flutter.Text('오류 발생: $error'));
     }
     if (!cameraAccess) {
-      return Center(child: Text('아직 카메라 접근 권한이 허용되지 않았습니다.'));
+      return Center(child: flutter.Text('아직 카메라 접근 권한이 허용되지 않았습니다.'));
     }
     if (cameras == null) {
-      return Center(child: Text('카메라 목록을 가져오는 중입니다.'));
+      return Center(child: flutter.Text('카메라 목록을 가져오는 중입니다.'));
     }
     if (cameras!.isEmpty) {
-      return Center(child: Text('사용 가능한 카메라가 없습니다.'));
+      return Center(child: flutter.Text('사용 가능한 카메라가 없습니다.'));
     }
     return CameraView(camera: cameras![0]);
   }
@@ -99,7 +100,7 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     if (!controller.value.isInitialized) {
-      return Center(child: Text('Initializing camera...'));
+      return Center(child: flutter.Text('Initializing camera...'));
     }
 
     return AspectRatio(

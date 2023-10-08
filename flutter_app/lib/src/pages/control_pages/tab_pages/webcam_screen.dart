@@ -1,15 +1,22 @@
-import 'dart:html';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 
-Future<void> main() async {
-  runApp(WebcamScreen());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
+  runApp(CameraApp());
 }
 
-class WebcamScreen extends StatelessWidget {
+class CameraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AppBody();
+    return MaterialApp(
+      home: Scaffold(
+        body: AppBody(),
+      ),
+    );
   }
 }
 
@@ -19,92 +26,44 @@ class AppBody extends StatefulWidget {
 }
 
 class _AppBodyState extends State<AppBody> {
-  bool cameraAccess = false;
-  String? error;
-  List<CameraDescription>? cameras;
-
-  @override
-  void initState() {
-    getCameras();
-    super.initState();
-  }
-
-  Future<void> getCameras() async {
-    try {
-      await window.navigator.mediaDevices!
-          .getUserMedia({'video': true, 'audio': false});
-      setState(() {
-        cameraAccess = true;
-      });
-
-      final cameras = await availableCameras();
-      setState(() {
-        this.cameras = cameras;
-      });
-    } on DomException catch (e) {
-      setState(() {
-        error = '${e.name}: ${e.message}';
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (error != null) {
-      return Center(child: Text('오류 발생: $error'));
-    }
-    if (!cameraAccess) {
-      return Center(child: Text('아직 카메라 접근 권한이 허용되지 않았습니다.'));
-    }
-    if (cameras == null) {
-      return Center(child: Text('카메라 목록을 가져오는 중입니다.'));
-    }
-    if (cameras!.isEmpty) {
-      return Center(child: Text('사용 가능한 카메라가 없습니다.'));
-    }
-    return CameraView(camera: cameras![0]);
-  }
-}
-
-class CameraView extends StatefulWidget {
-  final CameraDescription camera;
-
-  const CameraView({Key? key, required this.camera}) : super(key: key);
-
-  @override
-  _CameraViewState createState() => _CameraViewState();
-}
-
-class _CameraViewState extends State<CameraView> {
-  late CameraController controller;
+  late CameraController _controller;
 
   @override
   void initState() {
     super.initState();
-    controller = CameraController(widget.camera, ResolutionPreset.max);
-    controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
+    _initializeCamera();
+  }
+
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    final firstCamera = cameras.first;
+
+    _controller = CameraController(
+      firstCamera,
+      ResolutionPreset.max,
+      enableAudio: false, // 오디오 사용 여부 설정
+    );
+
+    await _controller.initialize();
+
+    if (mounted) {
       setState(() {});
-    });
+    }
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!controller.value.isInitialized) {
-      return Center(child: Text('Initializing camera...'));
+    if (!_controller.value.isInitialized) {
+      return Center(child: CircularProgressIndicator());
     }
-
-    return AspectRatio(
-      aspectRatio: controller.value.aspectRatio,
-      child: CameraPreview(controller),
+    return Center(
+      child: CameraPreview(_controller),
     );
   }
 }

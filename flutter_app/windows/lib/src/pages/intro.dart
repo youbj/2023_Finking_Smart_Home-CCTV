@@ -6,12 +6,8 @@ class Intro extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[600],
-      body: Center(
-          child: Text(
-        'Intro Screen',
-        style: TextStyle(fontSize: 30, color: Colors.white),
-      )),
+      backgroundColor: Color(0xfffafafa),
+      body: Center(child: Image.asset('assets/images/IntroLogo.png')),
     );
   }
 }

@@ -1,9 +1,8 @@
 from flask import Flask, render_template
-from flask_cors import CORS
 import subprocess
 
 app = Flask(__name__)
-CORS(app)
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -19,4 +18,4 @@ def run_fall_detector():
     return 'Fall Detector is running!'
 
 if __name__ == '__main__':
-    app.run(debug=True,port=5000)
+    app.run(host='0.0.0.0',debug=True,port=5001)

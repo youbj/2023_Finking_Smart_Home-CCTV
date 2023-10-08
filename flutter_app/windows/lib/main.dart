@@ -1,6 +1,6 @@
 import 'package:guardian/src/App.dart';
 import 'package:flutter/material.dart';
-import 'package:guardian/src/pages/intro.dart';
+import 'package:guardian/src/intro.dart';
 
 void main() => runApp(MyApp());
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guardian/src/pages/SelectMode.dart';
+import 'package:guardian/src/pages/control_pages/SelectMode.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class OnBoardingPage extends StatelessWidget {

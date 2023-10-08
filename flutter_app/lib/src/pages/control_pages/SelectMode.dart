@@ -34,7 +34,7 @@ class SelectMode extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => WebcamScreen(),
+                          builder: (context) => (CameraApp()),
                         ));
                       },
                       style: ElevatedButton.styleFrom(
@@ -111,7 +111,7 @@ class SelectMode extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context)
                                     .pushReplacement(MaterialPageRoute(
-                                  builder: (context) => WebcamScreen(),
+                                  builder: (context) => CameraApp(),
                                 ));
                               },
                               style: ElevatedButton.styleFrom(

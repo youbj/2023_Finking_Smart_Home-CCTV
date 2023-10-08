@@ -70,6 +70,7 @@ def falling_alarm(image, bbox):
     #저장 경로를 저장하는 것
     save_path = os.path.join('..\images', filename)
     cv2.imwrite(save_path, image)
+# 사진 경로 상위 dir인 images에 저장되는데 시간을 줘서 저장할지 아니면 fall detection에서 false에서 true로 넘어갈 때 변경할지 정해야 할 듯
 
     
 

@@ -104,6 +104,7 @@ def prepare_image(image):
     _image = image[0].permute(1, 2, 0) * 255
     _image = _image.cpu().numpy().astype(np.uint8)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
+    _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
 
 

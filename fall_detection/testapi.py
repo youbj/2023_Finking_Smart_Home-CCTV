@@ -87,7 +87,7 @@ def run_fall_detector():
     return 'Fall Detector is running!'
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
 
 # 사용법:
 # /get_camera_data:  엔드포인트로 GET 요청을 보내면 카메라에 관련된 데이터가 JSON 형식으로 반환

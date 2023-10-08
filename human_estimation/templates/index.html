@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fall Detector</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Fall Detector</h1>
+    <button id="run-button">Run Fall Detector</button>
+    <button id="next-button">next page to face recog</button>
+
+    <script>
+        $(document).ready(function() {
+            $('#run-button').click(function() {
+                $.get('/run_fall_detector', function(response) {
+                    console.log(response);
+                });
+            });
+            $('#next-button').click(function() {
+                $.get('../face_re/recog_knn.py', function(response) {
+                    console.log(response);
+                });
+            });
+            
+        });
+    </script>
+</body>
+</html>

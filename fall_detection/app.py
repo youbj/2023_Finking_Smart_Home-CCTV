@@ -18,8 +18,4 @@ def run_fall_detector():
     return 'Fall Detector is running!'
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    app.run(debug=True,port=5000)
-=======
-    app.run(debug=True)
->>>>>>> b2b661361de26959ce687b06e32768de1de99c92
+    app.run(host='0.0.0.0',debug=True,port=5001)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,13 +61,41 @@ class _AppBodyState extends State<AppBody> {
     super.dispose();
   }
 
+  void runFallDetector() async {
+    final baseUrl = Uri.parse('http://0.0.0.0:5001/run_fall_detector');
+    try {
+      final response = await http.get(baseUrl);
+      if (response.statusCode == 200) {
+        // fall_detector.py 실행에 성공한 경우
+        print('Fall Detector is running!');
+      } else {
+        // fall_detector.py 실행에 실패한 경우
+        print('Failed to run Fall Detector!');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
     if (!_controller.value.isInitialized) {
       return Center(child: CircularProgressIndicator());
     }
     return Center(
-      child: CameraPreview(_controller),
+      child: Column(
+        children: [
+          Container(
+              height: size.height * 0.8, child: CameraPreview(_controller)),
+          ElevatedButton(
+              onPressed: () async {
+                runFallDetector();
+              },
+              child: Text('test'))
+        ],
+      ),
     );
   }
 }

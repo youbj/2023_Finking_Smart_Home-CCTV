@@ -9,6 +9,14 @@ class CustomStyle {
     return TextStyle(
         fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold);
   }
+
+  static TextStyle OnboardingStyle() {
+    return TextStyle(
+      fontSize: 15,
+      color: Colors.blue,
+      fontWeight: FontWeight.bold,
+    );
+  }
 }
 
 class MyTextSample {

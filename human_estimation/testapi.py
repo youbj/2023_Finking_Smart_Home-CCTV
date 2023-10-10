@@ -85,6 +85,23 @@ def run_fall_detector():
     connection.close()
 
     return 'Fall Detector is running!'
+# 넘어진 감지 스크린샷 프론트로 api전송 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return '파일이 없습니다.'
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return '파일을 선택하지 않았습니다.'
+    
+    # 업로드된 파일을 저장할 경로 지정
+    save_path = 'C:\\Users\\20map\\Desktop\\Jaewon2\\2023_Finking_Smart_Home-CCTV\\human_estimation\\images\\'
+    file.save(save_path + file.filename)
+    
+    return '파일 업로드 완료'
+
 
 if __name__ == '__main__':
     

@@ -10,8 +10,8 @@ db_config = {
     'user': 'root',
     'password': '1234',
     'host': 'localhost',
-    'database': 'flask',
-    'ssl_disabled': True  # SSL 비활성화
+    'database': 'flask'
+    #'ssl_disabled': True  # SSL 비활성화
 }
 
 @app.route('/')

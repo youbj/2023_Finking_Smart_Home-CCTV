@@ -57,7 +57,7 @@ def falling_alarm(image, bbox):
     # 바운딩 박스 그리기: 빨간색 사각형으로 물체의 위치를 표시
     
     #아래 두 명령어는 이미지를 저장하는 것
-    timestamp = int(time.time())  # 현재 시간을 초 단위로 얻음
+    timestamp = int(time.time())  # 현재 시간을 초 단위로 얻음    
     filename = f'fall_capture_{timestamp}.jpg'
     
     x_min, y_min, x_max, y_max = bbox
@@ -128,7 +128,7 @@ def main():
         is_fall, bbox = fall_detection(output)
         
         if is_fall:  # 넘어짐이 발생했을 때                
-                falling_alarm(_image, bbox)           
+            falling_alarm(_image, bbox)           
 
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)

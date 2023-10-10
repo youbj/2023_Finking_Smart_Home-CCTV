@@ -11,7 +11,7 @@ db_config = {
     'password': '1234',
     'host': 'localhost',
     'database': 'flask',
-    'ssl_disabled': True  # SSL 비활성화
+    #'ssl_disabled': True  # SSL 비활성화
 }
 
 @app.route('/')
@@ -76,8 +76,8 @@ def run_fall_detector():
 
     connection.commit()  # 데이터베이스에 변경 사항을 커밋.
 
-    # subprocess를 사용하여 fall_detector.py 실행 (이 부분은 fall_detector.py가 정확한 경로에 있어야 함)
-    cmd = 'python fall_detector.py'
+    # subprocess를 사용하여 python main.py 실행 (이 부분은 python main.py가 정확한 경로에 있어야 함)
+    cmd = 'python main.py'
     subprocess.Popen(cmd, shell=True)
 
     # 연결 및 커서 닫기
@@ -87,6 +87,7 @@ def run_fall_detector():
     return 'Fall Detector is running!'
 
 if __name__ == '__main__':
+    
     app.run(debug=True, port=5001)
 
 # 사용법:

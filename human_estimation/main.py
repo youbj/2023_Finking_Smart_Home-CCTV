@@ -53,7 +53,6 @@ def save_fall_capture(image, save_dir='..\images'):
     save_path = os.path.join(save_dir, filename)
     cv2.imwrite(save_path, image)
 
-
 # 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
     # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
@@ -120,9 +119,12 @@ def prepare_image(image):
     return _image
 
 @app.route('/upload', methods=['POST']) # api 추가 
+
+device_index = 0
+
 def main():
     # 웹캠 캡처를 생성합니다.
-    vid_cap = cv2.VideoCapture(0)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라를 사용하려면 적절한 인덱스를 사용하세요.
+    vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
 
     # Pose 모델을 로드합니다.
     model, device = get_pose_model()
@@ -130,6 +132,10 @@ def main():
     prev_fall = False    
     
     check_time=0
+    
+    if not vid_cap.isOpened():
+        print("디바이스를 열 수 없습니다.")
+        exit()
     
     while True:  # 무한 루프를 사용하여 웹캠 스트림을 계속 처리합니다.
         success, frame = vid_cap.read()
@@ -153,8 +159,7 @@ def main():
             else:
                 if is_fall:
                     falling_check(_image, bbox)
-        
-        
+
         # if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
         #     if is_fall != prev_fall:
         #         if is_fall:
@@ -179,6 +184,7 @@ def main():
     # 루프를 빠져나온 후, 리소스를 정리합니다.
     vid_cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     # 웹캠 캡쳐

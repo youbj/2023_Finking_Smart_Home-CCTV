@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/SelectMode.dart';
+import 'package:guardian/src/widgets/CustomStyle.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class OnBoardingPage extends StatelessWidget {
@@ -9,35 +10,109 @@ class OnBoardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return IntroductionScreen(
+      bodyPadding: EdgeInsets.fromLTRB(0, 100, 0, 0),
       pages: [
         PageViewModel(
-          title: '원격 CCTV 카메라 실행',
-          body: '우리의 안전을 보호하는 데 매우 유용한 도구입니다. '
-              '이제 여러분은 언제 어디서나 집, 사무실, 상점 등을 '
-              '실시간으로 모니터링하고, 사건 발생 시 신속히 대응할 수 있습니다.',
+          title: '원격 CCTV 카메라',
+          bodyWidget: Container(
+            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+            child: Column(
+              children: [
+                Text(
+                  '우리의 안전을 보호하는 유용한 기술',
+                  style: CustomStyle.OnboardingStyle(),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '언제, 어디서나 소중한 공간을',
+                  style: CustomStyle.OnboardingStyle(),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '실시간으로 모니터링하고, 감지하고',
+                  style: CustomStyle.OnboardingStyle(),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '지킬 수 있습니다!',
+                  style: CustomStyle.OnboardingStyle(),
+                ),
+              ],
+            ),
+          ),
           image: Image.asset(
             'assets/images/selfie.png',
-            width: 400,
+            width: 800,
           ),
           decoration: getPageDecoration(),
         ),
         PageViewModel(
           title: '침입자 감시 기능',
-          body: '침입자 감시 기능은 강력한 보안 솔루션을 제공합니다. '
-              '이 기능은 카메라가 움직임을 감지하고 '
-              '이를 즉시 파악하여 사건 발생 시 적절한 조치를 취할 수 있도록 도와줍니다.'
-              '카메라는 지정된 영역에서 움직임을 감지하면 이를 분석하여 실제로 침입자인지를 판단합니다.',
+          bodyWidget: Column(
+            children: [
+              Text(
+                '이 기능은 강력한 보안 솔루션을 제공합니다. ',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '카메라가 움직임을 감지하고 즉시 파악하여',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '사건 발생 시 적절한 조치를 취할 수 있도록 도와줍니다.',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '카메라는 움직임을 감지하여 침입자를 판단합니다.',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+            ],
+          ),
           image: Image.asset(
             'assets/images/onborading1.jpg',
-            width: 400,
+            width: 500,
           ),
           decoration: getPageDecoration(),
         ),
         PageViewModel(
           title: '위급상황 탐지 기능',
-          body: '이 기능은 사전에 정의된 위험 상황을 감지하고 즉시 알림을 보내어 '
-              '신속한 대응을 가능케 합니다. 또한, 위급상황 탐지 기능은 AI 기술을'
-              '사용하여 의심스러운 행동이나 비정상적인 패턴을 식별할 수도 있습니다. ',
+          bodyWidget: Column(
+            children: [
+              Text(
+                '이 기능은 위험 상황을 감지하고 즉시 알림을 보내고',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '신속한 대응을 제공합니다. 위급상황 탐지 기능은 ',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                '비정상적인 패턴을 식별하는 AI 기술을 사용합니다.',
+                style: CustomStyle.OnboardingStyle(),
+              ),
+            ],
+          ),
           image: Image.asset(
             'assets/images/danger.jpg',
             width: 400,

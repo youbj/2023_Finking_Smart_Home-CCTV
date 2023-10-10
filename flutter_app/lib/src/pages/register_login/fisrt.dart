@@ -33,7 +33,7 @@ class First extends StatelessWidget {
                 Container(
                   height: size.height * 0.92,
                   width: size.width * 0.8,
-                  padding: EdgeInsets.fromLTRB(0, 100, 50, 0),
+                  padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
                   child: Column(
                     children: [
                       Row(
@@ -52,10 +52,10 @@ class First extends StatelessWidget {
                         ],
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 10,
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                         width: double.infinity,
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,18 +63,57 @@ class First extends StatelessWidget {
                               Text(
                                 '회원가입이 완료되었습니다.',
                                 style: TextStyle(
-                                    color: Colors.black54, fontSize: 15),
+                                    color: Colors.black54, fontSize: 25),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    '이제 ',
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Home Guardian',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    '을 통해 집안 안전을 지키세요.',
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 2,
                               ),
                               Text(
-                                '이제 Home Guardian을 통해 집안 안전을 지키세요.',
+                                '시작하기 버튼을 누르면 간단한 설명 이후 ',
                                 style: TextStyle(
-                                    color: Colors.black54, fontSize: 15),
+                                  color: Colors.black54,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 2,
                               ),
                               Text(
-                                '시작하기 버튼을 누르면 간단한 설명 이후 메인으로 이동합니다. ',
+                                '메인으로 이동합니다.',
                                 style: TextStyle(
-                                    color: Colors.black54, fontSize: 15),
-                              )
+                                  color: Colors.black54,
+                                  fontSize: 15,
+                                ),
+                              ),
                             ]),
                       )
                     ],

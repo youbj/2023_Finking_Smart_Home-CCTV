@@ -52,7 +52,7 @@ def fall_detection(poses):
 #     save_path = os.path.join(save_dir, filename)
 #     cv2.imwrite(save_path, image)
 
-def falling_alarm(image, bbox):
+def falling_alarm(image, bbox, prev_fall):
     # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
     # 바운딩 박스 그리기: 빨간색 사각형으로 물체의 위치를 표시
     
@@ -67,10 +67,24 @@ def falling_alarm(image, bbox):
     # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 상단에 표시
     cv2.putText(image, 'Person Fell down', (11, 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
     
-    #저장 경로를 저장하는 것
-    save_path = os.path.join('..\images', filename)
-    cv2.imwrite(save_path, image)
-# 사진 경로 상위 dir인 images에 저장되는데 시간을 줘서 저장할지 아니면 fall detection에서 false에서 true로 넘어갈 때 변경할지 정해야 할 듯
+    # #저장 경로를 저장하는 것
+    if not prev_fall:
+        save_path = os.path.join('..\images', filename)
+        time.sleep(0.5)
+        cv2.imwrite(save_path, image)
+
+        
+def falling_check(image, bbox):
+    # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
+    # 바운딩 박스 그리기: 빨간색 사각형으로 물체의 위치를 표시
+    
+    x_min, y_min, x_max, y_max = bbox
+    cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
+                  thickness=5, lineType=cv2.LINE_AA)
+
+    # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 상단에 표시
+    cv2.putText(image, 'Person Fell down', (11, 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
+
 
 def get_pose_model():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -114,22 +128,32 @@ def main():
     model, device = get_pose_model()
     
     prev_fall = False
-    
+   
     while True:  # 무한 루프를 사용하여 웹캠 스트림을 계속 처리합니다.
         success, frame = vid_cap.read()
+        
         if not success:
             print('Error while reading frame. Exiting...')
-            break
-        
+            break       
         
         # 웹캠 프레임(frame)을 처리하고 필요한 작업을 수행합니다.
         image, output = get_pose(frame, model, device)
         _image = prepare_image(image)
         is_fall, bbox = fall_detection(output)
         
-        if is_fall:  # 넘어짐이 발생했을 때                
-            falling_alarm(_image, bbox)           
-
+        # if is_fall:  # 넘어짐이 발생했을 때                
+        #     falling_alarm(_image, bbox)
+   
+        if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
+            if is_fall != prev_fall:
+                if is_fall:
+                    # 넘어짐 감지된 이미지 저장
+                    falling_alarm(_image, bbox, prev_fall)
+                prev_fall = is_fall
+            else:
+                if is_fall:
+                    falling_check(_image, bbox)
+        
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)
 

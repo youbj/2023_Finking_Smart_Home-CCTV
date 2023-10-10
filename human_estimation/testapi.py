@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify #  Flask, request, jsonify 필수 
 import subprocess
 import mysql.connector
 from datetime import datetime
@@ -93,7 +93,7 @@ def upload_file():
     
     file = request.files['file']
     
-    if file.filename == '':
+    if file.filename == '': #파일의 이름이 비어있다면 
         return '파일을 선택하지 않았습니다.'
     
     # 업로드된 파일을 저장할 경로 지정

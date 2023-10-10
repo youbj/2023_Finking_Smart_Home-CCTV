@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:guardian/src/DB/Datacontrol.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
 import '../../widgets/common_switch.dart';
 import 'package:intl/intl.dart';
@@ -100,16 +101,22 @@ class _PageholderState extends State<Pageholder> {
                         ),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       // 버튼을 누를 때마다 ListTile 추가
+                      CameraData cameraData = await fetchData();
                       setState(() {
                         drawerItems.add(
                           Container(
                             padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
                             child: ListTile(
                               leading: Icon(Icons.security),
-                              title: Text(
-                                '$currentTime' '에 감지 기록이 발생하였습니다.',
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('사용자 ${cameraData.id}의 CCTV에서'),
+                                  Text(' ${cameraData.cameraStartTime}에'),
+                                  Text('위험이 감지되었습니다!'),
+                                ],
                               ),
                             ),
                           ),

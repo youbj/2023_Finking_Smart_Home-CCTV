@@ -67,6 +67,7 @@ def run_fall_detector():
         update_query = "UPDATE camera_log SET camera_start_time = %s WHERE id = %s"
         update_values = (camera_start_time, "3801")
         cursor.execute(update_query, update_values)
+        print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     else:
         # 레코드가 없으면 새로 삽입
         camera_start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -77,8 +78,8 @@ def run_fall_detector():
     connection.commit()  # 데이터베이스에 변경 사항을 커밋.
 
     # subprocess를 사용하여 fall_detector.py 실행 (이 부분은 fall_detector.py가 정확한 경로에 있어야 함)
-    cmd = 'python fall_detector.py'
-    subprocess.Popen(cmd, shell=True)
+    #cmd = 'python fall_detector.py'
+    #subprocess.Popen(cmd, shell=True)
 
     # 연결 및 커서 닫기
     cursor.close()
@@ -87,7 +88,7 @@ def run_fall_detector():
     return 'Fall Detector is running!'
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(host='0.0.0.0',debug=True,port=5001)
 
 # 사용법:
 # /get_camera_data:  엔드포인트로 GET 요청을 보내면 카메라에 관련된 데이터가 JSON 형식으로 반환

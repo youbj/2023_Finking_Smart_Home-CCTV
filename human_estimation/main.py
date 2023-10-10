@@ -7,13 +7,13 @@ import numpy as np
 import os
 import datetime
 import time
-
 from tqdm import tqdm
-
+from flask import Flask, render_template, request, redirect, url_for, jsonify #  Flask, request, jsonify 필수 
 from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
 
+app = Flask(__name__) # 추가해주기 
 
 def fall_detection(poses):
     for pose in poses:
@@ -52,7 +52,6 @@ def save_fall_capture(image, save_dir='..\images'):
     # 이미지를 지정된 디렉토리에 저장
     save_path = os.path.join(save_dir, filename)
     cv2.imwrite(save_path, image)
-
 
 # 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
@@ -119,6 +118,7 @@ def prepare_image(image):
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
 
+@app.route('/upload', methods=['POST']) # api 추가 
 
 device_index = 0
 
@@ -159,8 +159,7 @@ def main():
             else:
                 if is_fall:
                     falling_check(_image, bbox)
-        
-        
+
         # if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
         #     if is_fall != prev_fall:
         #         if is_fall:

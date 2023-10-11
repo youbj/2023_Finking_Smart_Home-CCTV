@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 
 Future<Map<String, dynamic>> getCameraData() async {
-  var baseUrl = Uri.parse('http://172.20.10.3:5001/get_camera_data');
+  var baseUrl = Uri.parse('http://192.168.0.13:5001/get_camera_data');
 
   final response = await http.get(baseUrl);
   if (response.statusCode == 200) {
@@ -39,7 +39,7 @@ Future<CameraData> fetchData() async {
 }
 
 void updateData() async {
-  final updateUrl = Uri.parse('http://172.20.10.3:5001/run_fall_detector');
+  final updateUrl = Uri.parse('http://192.168.0.13:5001/run_fall_detector');
   try {
     final response = await http.get(updateUrl);
     if (response.statusCode == 200) {

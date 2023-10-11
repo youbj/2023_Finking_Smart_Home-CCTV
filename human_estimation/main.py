@@ -120,9 +120,11 @@ def prepare_image(image):
 
 @app.route('/upload', methods=['POST']) # api 추가 
 
-device_index = 0
+
 
 def main():
+
+    device_index = 0
     # 웹캠 캡처를 생성합니다.
     vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
 

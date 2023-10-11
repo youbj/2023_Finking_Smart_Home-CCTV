@@ -175,7 +175,14 @@ class _PageholderState extends State<Pageholder> {
           /** 영상페이지 */
           Container(
             child: Center(
-              child: Text("apps"),
+              child: ElevatedButton(
+                  child: Text('socket'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Streamingpage()),
+                    );
+                  }),
             ),
           ),
           /** 감지 페이지 */

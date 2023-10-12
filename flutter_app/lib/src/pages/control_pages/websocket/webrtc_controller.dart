@@ -103,7 +103,7 @@ class WebRTCController extends WebRTCSocket {
   Future<void> _initPeer() async {
     _peer = await createPeerConnection({
       'iceServers': [
-        {'url': '192.168.0.13:5002'},
+        {'url': 'stun:stun.l.google.com:19302'},
       ],
     });
 

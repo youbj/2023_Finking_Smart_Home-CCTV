@@ -14,14 +14,14 @@ userList = []
 def index():
     return render_template('index.html')
 
-@socketio.on('connection')
-def handle_connection():
+@socketio.on('connect')
+def handle_connect():
     userId = request.sid
     userList.append(userId)
 #유저 연결시 데이터 보냄
-    print(f'[connection] userLogin: {userId}')
+    print(f'[connect] userLogin: {userId}')
     socketio.emit('updateUserlist', {'userList': userList})
-    print(f'[connection] userList sent: {userList}')
+    print(f'[connect] userList sent: {userList}')
 
 
 #offer가 왔을 때 처리
@@ -74,7 +74,7 @@ def handle_disconnect_peer(data):
     if to is not None:
         socketio.emit('disconnectPeer', room=to)
 
-#연결 해제시 userlist update
+#연결 해제시 userlist update 
 @socketio.on('disconnect')
 def handle_disconnect():
     userId = request.sid

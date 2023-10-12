@@ -9,8 +9,9 @@ class WebRTCSocket {
   Future<String?> connectSocket() {
     final Completer<String> completer = Completer<String>();
 
-    _socket = io.io('http://192.168.0.13:5002/',
-        io.OptionBuilder().setTransports(['websocket']).build());
+    _socket = io.io('http://192.168.0.13:5002/', <String, dynamic>{
+      'transports': ['websocket'],
+    });
 
     _socket.onConnect((data) {
       user = _socket.id;

@@ -14,7 +14,7 @@ from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
 
 app = Flask(__name__) # 추가해주기 
-
+UPLOAD_FOLDER = 'images'  # 이미지를 저장하는 디렉토리
 def fall_detection(poses):
     for pose in poses:
         xmin, ymin = (pose[2] - pose[4] / 2), (pose[3] - pose[5] / 2)
@@ -59,8 +59,8 @@ def falling_alarm(image, bbox, prev_fall):
     # 바운딩 박스 그리기: 빨간색 사각형으로 물체의 위치를 표시
         
     current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
-    filename = f'fall_capture_{current_time}.jpg'
-    
+    filename = f'fall_capture_{current_time}.jpg' #파일저장명 // api로 보내기위해서 필요없는 함수가됨 
+    ## 이미지 파일도 저장하고 api로 보내는게 두개가 되는지 확인하려면 filename, save_path주석풀고 확인해봐야함
     x_min, y_min, x_max, y_max = bbox
     cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
                   thickness=5, lineType=cv2.LINE_AA)
@@ -70,9 +70,40 @@ def falling_alarm(image, bbox, prev_fall):
     
     #저장 경로를 저장하는 것
     if not prev_fall:
-        save_path = os.path.join('..\images', filename)        
+        save_path = os.path.join('..\images', filename)
         cv2.imwrite(save_path, image)
-        
+        file_url = f'/upload'  # 업로드 엔드포인트 ,파일을 저장하는 대신에 /upload 엔드포인트로 이동한 URL을 반환
+        return file_url
+    
+def is_allowed_file(filename):
+    # 허용된 파일 확장자 목록을 지정합니다.
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
+    if file and is_allowed_file(file.filename):
+        # 안전한 파일 이름 생성
+        current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        filename = f'fall_capture_{current_time}.jpg'
+
+        # 이미지 파일 저장
+        save_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(save_path)# save_path는 저장할 경로 및 파일 이름 ,저장
+
+        file_url = f'/get_image/{filename}'  # 이미지의 URL 생성
+        return jsonify({'message': 'File uploaded successfully', 'file_url': file_url})
+         # 파일 업로드가 성공하면 JSON 응답을 반환
+         # 응답에는 업로드된 파일의 URL도 포함
+    return jsonify({'error': 'Invalid file format'})
 
 #넘어져 있는 형상이 계속될 때
 def falling_check(image, bbox):
@@ -111,23 +142,19 @@ def get_pose(image, model, device):
     return image, output
 
 
+
 def prepare_image(image):
     _image = image[0].permute(1, 2, 0) * 255
     _image = _image.cpu().numpy().astype(np.uint8)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
-
-@app.route('/upload', methods=['POST']) # api 추가 
-
-
-
+#device_index = 0
+#@app.route('/upload', methods=['POST']) # api 추가 
 def main():
-
-    device_index = 0
     # 웹캠 캡처를 생성합니다.
-    vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
-
+    #vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
+    vid_cap = cv2.VideoCapture(0)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
     # Pose 모델을 로드합니다.
     model, device = get_pose_model()
     
@@ -160,21 +187,7 @@ def main():
                 prev_fall = is_fall
             else:
                 if is_fall:
-                    falling_check(_image, bbox)
-
-        # if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
-        #     if is_fall != prev_fall:
-        #         if is_fall:
-        #             # 넘어짐 감지된 이미지 저장
-        #             check_time+=1
-        #             if check_time>=3:
-        #                 save_fall_capture(_image)
-        #             falling_check(_image, bbox)
-        #         prev_fall = is_fall
-        #     else:
-        #         if is_fall:
-        #             falling_check(_image, bbox)
-                                
+                    falling_check(_image, bbox)                  
 
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)
@@ -190,6 +203,7 @@ def main():
 
 if __name__ == '__main__':
     # 웹캠 캡쳐
-    vid_cap = cv2.VideoCapture(0)
-    
+    vid_cap = cv2.VideoCapture(0) 
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)    
     main()

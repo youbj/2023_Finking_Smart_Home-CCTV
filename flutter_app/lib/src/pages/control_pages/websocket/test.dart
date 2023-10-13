@@ -27,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     // 서버의 주소로 소켓 연결
-    socket = io('http://192.168.0.13:5002/', <String, dynamic>{
+    socket = io('http://172.20.10.3:5002/', <String, dynamic>{
       'transports': ['websocket'],
     });
 

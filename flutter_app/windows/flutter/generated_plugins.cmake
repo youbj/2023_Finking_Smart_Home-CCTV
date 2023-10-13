@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   firebase_auth
   firebase_core
+  flutter_webrtc
   fullscreen_window
   permission_handler_windows
   video_player_win

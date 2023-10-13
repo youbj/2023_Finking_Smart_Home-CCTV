@@ -1,7 +1,10 @@
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/DB/Datacontrol.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
+import 'package:guardian/src/pages/control_pages/websocket/test.dart';
+import 'package:guardian/src/pages/register_login/fisrt.dart';
 import '../../widgets/common_switch.dart';
 import 'package:intl/intl.dart';
 
@@ -39,7 +42,6 @@ class _PageholderState extends State<Pageholder> {
 
   @override
   Widget build(BuildContext context) {
-    var scaffoldKey = GlobalKey<ScaffoldState>();
     var size = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 5,
@@ -123,8 +125,7 @@ class _PageholderState extends State<Pageholder> {
                         );
                         itemCount++;
                       });
-                      Navigator.push(
-                        context,
+                      Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => CameraApp()),
                       );
                     },
@@ -175,7 +176,14 @@ class _PageholderState extends State<Pageholder> {
           /** 영상페이지 */
           Container(
             child: Center(
-              child: Text("apps"),
+              child: ElevatedButton(
+                  child: Text('socket'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Streamingpage()),
+                    );
+                  }),
             ),
           ),
           /** 감지 페이지 */
@@ -251,6 +259,15 @@ class _PageholderState extends State<Pageholder> {
                           ),
                           title: Text("Account"),
                           trailing: Icon(Icons.arrow_right),
+                          onTap: () {
+                            FirebaseAuth.instance.signOut();
+                            Navigator.pushAndRemoveUntil(context,
+                                MaterialPageRoute(
+                              builder: (context) {
+                                return const First();
+                              },
+                            ), (route) => false);
+                          },
                         ),
                       ],
                     ),

@@ -52,8 +52,10 @@ dependencies:
             path: packages/camera/camera
     android_intent: ^2.0.2
     permission_handler: ^11.0.0
-    firebase_messaging: ^14.6.8
     flutter_local_notifications: ^15.1.1
+    socket_io_client: ^2.0.3
+    provider: ^6.0.5
+    flutter_webrtc: ^0.9.45
 
 dev_dependencies:
     flutter_test:

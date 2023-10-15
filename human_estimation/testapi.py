@@ -30,7 +30,7 @@ def get_camera_data():
 
     # 데이터베이스에서 데이터 조회
     query = "SELECT * FROM camera_log WHERE id = %s"  # id로 필터링
-    values = ("3801",)
+    values = ("3801",) #values 값 고정
     cursor.execute(query, values)
     data = cursor.fetchone()  # 한 레코드만 가져옴 (여러 레코드라면 fetchall() 사용)
 

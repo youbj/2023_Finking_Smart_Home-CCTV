@@ -7,6 +7,7 @@ import numpy as np
 import os
 import datetime
 import time
+import requests
 from tqdm import tqdm
 from flask import Flask, render_template, request, redirect, url_for, jsonify #  Flask, request, jsonify 필수 
 from utils.datasets import letterbox
@@ -40,18 +41,33 @@ def fall_detection(poses):
     return False, None
 
 
-def save_fall_capture(image, save_dir='..\images'):
-    # 저장할 디렉토리를 지정
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+# def save_fall_capture(image, save_dir='..\images'):
+#     # 저장할 디렉토리를 지정
+#     if not os.path.exists(save_dir):
+#         os.makedirs(save_dir)
 
-    # 현재 시간을 기반으로 파일 이름 생성 (타임스탬프 사용)
-    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
+#     # 현재 시간을 기반으로 파일 이름 생성 (타임스탬프 사용)
+#     current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
+#     filename = f'fall_capture_{current_time}.jpg'
+    
+#     # 이미지를 지정된 디렉토리에 저장
+#     save_path = os.path.join(save_dir, filename)
+#     cv2.imwrite(save_path, image)
+
+def generate_image(image, save_dir='..\images'):
+    if not os.path.exists('..\images'):
+        os.makedirs('images')
+
+    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     filename = f'fall_capture_{current_time}.jpg'
     
-    # 이미지를 지정된 디렉토리에 저장
+    # 이미지 파일로 저장
     save_path = os.path.join(save_dir, filename)
     cv2.imwrite(save_path, image)
+    
+    return save_path  # 이미지 파일 경로 반환
+
+    
 
 # 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
@@ -65,25 +81,42 @@ def falling_alarm(image, bbox, prev_fall):
     cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
                   thickness=5, lineType=cv2.LINE_AA)
 
-    # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 상단에 표시
-    cv2.putText(image, 'Person Fell down', (11, 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
-    
+    # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 하단에 표시
+    cv2.putText(image, 'Person Fell down', (11, image.shape[0] - 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
+
     #저장 경로를 저장하는 것
     if not prev_fall:
-        save_path = os.path.join('..\images', filename)        
-        cv2.imwrite(save_path, image)
+        # save_path = os.path.join('..\images', filename)        
+        # cv2.imwrite(save_path, image)
+        generate_image(image)
         
 
-#넘어져 있는 형상이 계속될 때
+# 넘어져 있는 형상이 계속될 때
 def falling_check(image, bbox):
     
     x_min, y_min, x_max, y_max = bbox
     cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
                   thickness=5, lineType=cv2.LINE_AA)
 
-    # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 상단에 표시
-    cv2.putText(image, 'Person Fell down', (11, 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
+    # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 하단에 표시
+    cv2.putText(image, 'Person Fell down', (11, image.shape[0] - 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
 
+# 움직임이 인식되지 않은 채 8시간이 경과되었을 때
+def no_movement(image, img_save): 
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    text = "There is no movement.\nA check is required."
+    
+    # 텍스트 바운더리 가져오기
+    textsize = cv2.getTextSize(text, font, 1, 2)[0]
+
+    # 텍스트 바운더리로 좌표 구하기
+    textX = (image.shape[1] - textsize[0]) // 2
+    textY = (image.shape[0] + textsize[1]) // 2
+    
+    if img_save:
+        generate_image(image)
+    
+    cv2.putText(image, text, (textX,textY), font, 1, (0, 0, 255),  thickness=4, lineType=cv2.LINE_AA)
 
 def get_pose_model():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -118,15 +151,13 @@ def prepare_image(image):
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
 
+
+device_index = 0
+
 @app.route('/upload', methods=['POST']) # api 추가 
-
-
-
-def main():
-
-    device_index = 0
+def main():  
     # 웹캠 캡처를 생성합니다.
-    vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
+    vid_cap = cv2.VideoCapture(device_index)  # 다른 카메라 사용시 device_index를 1로 사용하면 됨
 
     # Pose 모델을 로드합니다.
     model, device = get_pose_model()
@@ -149,19 +180,32 @@ def main():
         # 웹캠 프레임(frame)을 처리하고 필요한 작업을 수행합니다.
         image, output = get_pose(frame, model, device)
         _image = prepare_image(image)
-        is_fall, bbox = fall_detection(output)       
-
+        is_fall, bbox = fall_detection(output)    
+        
+        if(check_time>=28800): #8시간 60*60*8 
+            if check_time%10==0:
+                img_save = True
+            else: 
+                img_save = False
+            no_movement(_image, img_save)
+            
+            continue
+           
         # 넘어지는 즉시 사진
         if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
             if is_fall != prev_fall:
                 if is_fall:
-                    # 넘어짐 감지된 이미지 저장
                     falling_alarm(_image, bbox, prev_fall)
                 prev_fall = is_fall
             else:
                 if is_fall:
                     falling_check(_image, bbox)
-
+            check_time=0
+        else:            
+            check_time+=1
+        
+        
+            
         # if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
         #     if is_fall != prev_fall:
         #         if is_fall:
@@ -177,6 +221,7 @@ def main():
                                 
 
         # 결과를 화면에 표시합니다.
+        mirror = cv2.flip(_image,1)
         cv2.imshow('Fall Detection!', _image)
 
         # 'q' 키를 누르면 루프를 종료합니다.
@@ -190,6 +235,6 @@ def main():
 
 if __name__ == '__main__':
     # 웹캠 캡쳐
-    vid_cap = cv2.VideoCapture(0)
+    vid_cap = cv2.VideoCapture(device_index)
     
     main()

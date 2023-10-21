@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify #  Flask, request, jsonify 필수 
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file #  Flask, request, jsonify 필수 
 import subprocess
 import mysql.connector
+import numpy as np
 from datetime import datetime
+import cv2
+import os
+
+import main
+
 
 app = Flask(__name__)
 
@@ -90,23 +96,32 @@ def run_fall_detector():
     connection.close()
 
     return 'Fall Detector is running!'
-# 넘어진 감지 스크린샷 프론트로 api전송 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return '파일이 없습니다.'
-    
-    file = request.files['file']
-    
-    if file.filename == '': #파일의 이름이 비어있다면 
-        return '파일을 선택하지 않았습니다.'
-    
-    # 업로드된 파일을 저장할 경로 지정
-    save_path = 'C:\\Users\\20map\\Desktop\\Jaewon2\\2023_Finking_Smart_Home-CCTV\\human_estimation\\images\\'
-    file.save(save_path + file.filename)
-    
-    return '파일 업로드 완료'
 
+# 넘어진 감지 스크린샷 프론트로 api전송 
+# @app.route('/upload', methods=['POST'])
+# def upload_file():
+#     if 'file' not in request.files:
+#         return '파일이 없습니다.'
+    
+#     file = request.files['file']
+    
+#     if file.filename == '': #파일의 이름이 비어있다면 
+#         return '파일을 선택하지 않았습니다.'
+    
+#     # 업로드된 파일을 저장할 경로 지정
+#     save_path = 'C:\\Users\\20map\\Desktop\\Jaewon2\\2023_Finking_Smart_Home-CCTV\\human_estimation\\images\\'
+#     file.save(save_path + file.filename)
+    
+#     return '파일 업로드 완료'
+
+
+# 유병주가 개발 중
+@app.route('/generate_fall_capture', methods=['POST'])
+def generate_fall_capture():
+    data = request.get_json()
+    image_path = main.generate_image(data.get('..\image'))  # 이미지 파일 경로 가져오기
+    
+    return jsonify({"image_path": image_path})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True,port=5000)

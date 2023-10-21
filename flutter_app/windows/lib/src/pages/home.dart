@@ -1,4 +1,4 @@
-import 'package:guardian/src/pages/SelectMode.dart';
+import 'package:guardian/src/pages/control_pages/SelectMode.dart';
 import 'package:guardian/src/App.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

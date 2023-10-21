@@ -1,288 +1,164 @@
-
-import 'dart:html';
-import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'Streamingpage.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-Future<void> main() async {
-  runApp(StreamPage());
-}
+import '../websocket/webrtc_controller.dart';
+import '../websocket/webrtc_view.dart';
 
-class StreamPage extends StatefulWidget {
-  @override
-  _StreamPageState createState() => _StreamPageState();
-}
-
-class _StreamPageState extends State<StreamPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('HOME'),
-      ),
-      body: AppBody(),
-    );
-  }
-}
-
-class AppBody extends StatefulWidget {
-  @override
-  _AppBodyState createState() => _AppBodyState();
-}
-
-class _AppBodyState extends State<AppBody> {
-  bool cameraAccess = false;
-  String? error;
-  List<CameraDescription>? cameras;
+class Streamingpage extends StatefulWidget {
+  const Streamingpage({Key? key}) : super(key: key);
 
   @override
-  void initState() {
-    getCameras();
-    super.initState();
-  }
-
-  Future<void> getCameras() async {
-    try {
-      await window.navigator.mediaDevices!
-          .getUserMedia({'video': true, 'audio': false});
-      setState(() {
-        cameraAccess = true;
-      });
-
-      final cameras = await availableCameras();
-      setState(() {
-        this.cameras = cameras;
-      });
-    } on DomException catch (e) {
-      setState(() {
-        error = '${e.name}: ${e.message}';
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (error != null) {
-      return Center(child: Text('오류 발생: $error'));
-    }
-    if (!cameraAccess) {
-      return Center(child: Text('아직 카메라 접근 권한이 허용되지 않았습니다.'));
-    }
-    if (cameras == null) {
-      return Center(child: Text('카메라 목록을 가져오는 중입니다.'));
-    }
-    if (cameras!.isEmpty) {
-      return Center(child: Text('사용 가능한 카메라가 없습니다.'));
-    }
-    return CameraView(cameras: cameras!);
-  }
+  State<Streamingpage> createState() => _StreamingpageState();
 }
 
-class CameraView extends StatefulWidget {
-  final List<CameraDescription> cameras;
-
-  const CameraView({Key? key, required this.cameras}) : super(key: key);
-
-  @override
-  _CameraViewState createState() => _CameraViewState();
-}
-
-class _CameraViewState extends State<CameraView> {
-  String? error;
-  CameraController? controller;
-  late CameraDescription cameraDescription = widget.cameras[0];
-
-  Future<void> initCam(CameraDescription description) async {
-    setState(() {
-      controller = CameraController(description, ResolutionPreset.max);
-    });
-
-    try {
-      await controller!.initialize();
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-      });
-    }
-
-    setState(() {});
-  }
+class _StreamingpageState extends State<Streamingpage> {
+  final WebRTCController _controller = WebRTCController();
 
   @override
   void initState() {
     super.initState();
-    initCam(cameraDescription);
+    _controller.initHandler();
   }
 
   @override
   void dispose() {
-    controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  /* flutter에서 행동인식 수행하려고 만든거 */
-  final String baseUrl = 'http://127.0.0.1:5000';
-
-  void runFallDetector() async {
-    try {
-      final response = await http.get(Uri.parse('http://127.0.0.1:5000/run_fall_detector'));
-      if (response.statusCode == 200) {
-        // fall_detector.py 실행에 성공한 경우
-        print('Fall Detector is running!');
-      } else {
-        // fall_detector.py 실행에 실패한 경우
-        print('Failed to run Fall Detector!');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
-    if (error != null) {
-      return Center(
-        child: Text('Initializing error: $error\nCamera list:'),
-      );
-    }
-    if (controller == null) {
-      return Center(child: Text('Loading controller...'));
-    }
-    if (!controller!.value.isInitialized) {
-      return Center(child: Text('Initializing camera...'));
-    }
-    var size = MediaQuery.of(context).size;
-
-    return Center(
-      child: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth < 800) {
-          return Column(children: [
-            Container(
-              color: Colors.black,
-              padding: EdgeInsets.fromLTRB(5, 70, 5, 70),
-              child: Container(
-                width: size.width * 1,
-                //height: size.height * 0.6,
-                child: AspectRatio(
-                    aspectRatio: 16 / 9, child: CameraPreview(controller!)),
-              ),
-            ),
-            Container(
-              height: size.height * 0.1,
-              margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                ElevatedButton(
-                  onPressed: () {                    
-                    runFallDetector();
-                  },
-                  child: Text('감지 모드 켜기'),
-                ),
-                SizedBox(width: 200,),
-                ElevatedButton(
-                                  onPressed: () {
-                                  // 웹캠 종료
-                                  controller?.dispose();
-                                  controller = null;
-                                  },
-                                  child: Text('웹캠 종료'),
-                                  )
-              ]),
-            )
-          ]);
-        } else {
-          return Column(children: [
-            Container(
-              color: Colors.black,
-              padding: EdgeInsets.fromLTRB(5, 70, 5, 70),
-              child: Container(
-                height: size.height * 0.5,
-                //height: size.height * 0.6,
-                child: AspectRatio(
-                    aspectRatio: 16 / 9, child: CameraPreview(controller!)),
-              ),
-            ),
-            Container(
-              height: size.height * 0.1,
-              margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                ElevatedButton(
-                  onPressed: runFallDetector,
-                  child: Text('감지 모드 켜기'),
-                )
-              ]),
-            )
-          ]);
+    return ValueListenableBuilder<ScreenState>(
+      valueListenable: _controller.screenNotifier,
+      builder: (_, screenState, __) {
+        late Widget body;
+        switch (screenState) {
+          case ScreenState.loading:
+            body = const Center(
+              child: Text('Loading...'),
+            );
+            break;
+          case ScreenState.initDone:
+            body = _initDone();
+            break;
+          case ScreenState.receivedCalling:
+            body = _receivedCalling();
+            break;
         }
-      }),
+        return Scaffold(
+          appBar: screenState == ScreenState.initDone
+              ? AppBar(
+                  title: const Text('Online User list'),
+                )
+              : null,
+          body: body,
+          floatingActionButton: screenState == ScreenState.initDone
+              ? FloatingActionButton(
+                  child: const Icon(Icons.call),
+                  onPressed: () async {
+                    await _controller.sendOffer();
+
+                    _moveToVideoView();
+                  },
+                )
+              : null,
+        );
+      },
     );
   }
-}
-/*Material(
-            child: DropdownButton<CameraDescription>(
-              value: cameraDescription,
-              icon: const Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 16,
-              onChanged: (CameraDescription? newValue) async {
-                if (controller != null) {
-                  await controller!.dispose();
-                }
-                setState(() {
-                  controller = null;
-                  cameraDescription = newValue!;
-                });
 
-                initCam(newValue!);
-              },
-              items: widget.cameras
-                  .map<DropdownMenuItem<CameraDescription>>((value) {
-                return DropdownMenuItem<CameraDescription>(
-                  value: value,
-                  child: Text('${value.name}: ${value.lensDirection}'),
-                );
-              }).toList(),
+  Widget _initDone() {
+    return SafeArea(
+      child: ValueListenableBuilder<List<String>>(
+        valueListenable: _controller.userListNotifier,
+        builder: (_, list, __) {
+          return ListView.builder(
+            itemCount: list.length,
+            itemBuilder: (_, index) {
+              String userId = list[index];
+              return ListTile(
+                leading: Text('${index + 1}'),
+                title: Text(
+                  userId,
+                  style: TextStyle(
+                    color: _controller.to == userId ? Colors.red : null,
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    _controller.to = userId;
+                  });
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _receivedCalling() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ValueListenableBuilder<bool>(
+          valueListenable: _controller.localVideoNotifier,
+          builder: (_, value, __) {
+            return value
+                ? RTCVideoView(
+                    _controller.localRenderer!,
+                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                  )
+                : const Center(child: Icon(Icons.person_off));
+          },
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    _controller.sendAnswer();
+                    _moveToVideoView();
+                  },
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    child: Icon(Icons.call),
+                  ),
+                ),
+                InkWell(
+                  onTap: () async {
+                    await _controller.refuseOffer();
+                  },
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    child: Icon(Icons.close),
+                  ),
+                ),
+              ],
             ),
-          ),*/ //카메라 설정
-          /*ElevatedButton(
-            onPressed: controller == null
-                ? null
-                : () async {
-                    await controller!.startVideoRecording();
-                    await Future.delayed(Duration(seconds: 5));
-                    final file = await controller!.stopVideoRecording();
-                    final bytes = await file.readAsBytes();
-                    final uri = Uri.dataFromBytes(bytes,
-                        mimeType: 'video/webm;codecs=vp8');
-
-                    final link = AnchorElement(href: uri.toString());
-                    link.download = 'recording.webm';
-                    link.click();
-                    link.remove();
-                  },
-            child: Text('Record 5 second video.'),
           ),
-          ElevatedButton(
-            onPressed: controller == null
-                ? null
-                : () async {
-                    final file = await controller!.takePicture();
-                    final bytes = await file.readAsBytes();
+        )
+      ],
+    );
+  }
 
-                    final link = AnchorElement(
-                        href: Uri.dataFromBytes(bytes, mimeType: 'image/png')
-                            .toString());
-
-                    link.download = 'picture.png';
-                    link.click();
-                    link.remove();
-                  },
-            child: Text('Take picture.'),
-          )*/ //동영상 재생 및 사진촬영
+  void _moveToVideoView() {
+    // ignore: use_build_context_synchronously
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WebRTCView(
+          controller: _controller,
+        ),
+      ),
+    ).whenComplete(() {
+      _controller.screenNotifier.value = ScreenState.initDone;
+    });
+  }
+}

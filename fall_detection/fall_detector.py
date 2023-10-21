@@ -12,7 +12,6 @@ import os
 import matplotlib.pyplot as plt
 
 
-
 try:
     mp.set_start_method('spawn')
 except RuntimeError:

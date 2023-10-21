@@ -41,19 +41,6 @@ def fall_detection(poses):
     return False, None
 
 
-# def save_fall_capture(image, save_dir='..\images'):
-#     # 저장할 디렉토리를 지정
-#     if not os.path.exists(save_dir):
-#         os.makedirs(save_dir)
-
-#     # 현재 시간을 기반으로 파일 이름 생성 (타임스탬프 사용)
-#     current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
-#     filename = f'fall_capture_{current_time}.jpg'
-    
-#     # 이미지를 지정된 디렉토리에 저장
-#     save_path = os.path.join(save_dir, filename)
-#     cv2.imwrite(save_path, image)
-
 def generate_image(image, save_dir='..\images'):
     if not os.path.exists('..\images'):
         os.makedirs('images')
@@ -65,17 +52,12 @@ def generate_image(image, save_dir='..\images'):
     save_path = os.path.join(save_dir, filename)
     cv2.imwrite(save_path, image)
     
-    return save_path  # 이미지 파일 경로 반환
-
     
 
 # 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
     # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
     # 바운딩 박스 그리기: 빨간색 사각형으로 물체의 위치를 표시
-        
-    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
-    filename = f'fall_capture_{current_time}.jpg'
     
     x_min, y_min, x_max, y_max = bbox
     cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
@@ -91,6 +73,7 @@ def falling_alarm(image, bbox, prev_fall):
         generate_image(image)
         
 
+
 # 넘어져 있는 형상이 계속될 때
 def falling_check(image, bbox):
     
@@ -100,6 +83,8 @@ def falling_check(image, bbox):
 
     # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 하단에 표시
     cv2.putText(image, 'Person Fell down', (11, image.shape[0] - 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
+
+
 
 # 움직임이 인식되지 않은 채 8시간이 경과되었을 때
 def no_movement(image, img_save): 
@@ -117,6 +102,7 @@ def no_movement(image, img_save):
         generate_image(image)
     
     cv2.putText(image, text, (textX,textY), font, 1, (0, 0, 255),  thickness=4, lineType=cv2.LINE_AA)
+
 
 def get_pose_model():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -162,7 +148,7 @@ def main():
     prev_fall = False    
     
     check_time=0
-    
+    fall_check_time =0
     if not vid_cap.isOpened():
         print("디바이스를 열 수 없습니다.")
         exit()
@@ -180,7 +166,7 @@ def main():
         is_fall, bbox = fall_detection(output)    
         
         if(check_time>=28800): #8시간 60*60*8 
-            if check_time%10==0:
+            if check_time%30==0: #움직임이 감지되지 않는다면 30초에 한번씩 이미지 저장
                 img_save = True
             else: 
                 img_save = False

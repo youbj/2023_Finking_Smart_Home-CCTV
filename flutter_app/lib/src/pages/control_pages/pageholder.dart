@@ -105,19 +105,26 @@ class _PageholderState extends State<Pageholder> {
                     ),
                     onPressed: () async {
                       // 버튼을 누를 때마다 ListTile 추가
+                      // CameraData cameraData = (await fetchData())['cameraData']; // 여기서 받음 -> 116번줄
+                      // ImageData imageData = (await fetchData())['imageData'];
                       CameraData cameraData = await fetchData();
                       setState(() {
                         drawerItems.add(
-                          Container(
+                          Container( // 해당 컨데이너에서 사용
                             padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
                             child: ListTile(
                               leading: Icon(Icons.security),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                                children: [ // 이미지 띄우기
+                                  Text('data,'),
                                   Text('사용자 ${cameraData.id}의 CCTV에서'),
                                   Text(' ${cameraData.cameraStartTime}에'),
-                                  Text('위험이 감지되었습니다!'),
+                                  // Text('위험이 감지되었습니다!'),
+                                  // Image.network(
+                                  //   imageData.imageUrl,
+                                  //   fit:BoxFit.fitWidth
+                                  // ),
                                 ],
                               ),
                             ),

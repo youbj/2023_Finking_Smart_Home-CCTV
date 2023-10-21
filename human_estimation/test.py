@@ -12,6 +12,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify # 
 from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
+from push_alarm import send_push_notification
 
 app = Flask(__name__) # 추가해주기 
 UPLOAD_FOLDER = 'images'  # 이미지를 저장하는 디렉토리
@@ -199,6 +200,20 @@ def main():
     # 루프를 빠져나온 후, 리소스를 정리합니다.
     vid_cap.release()
     cv2.destroyAllWindows()
+
+#@app.route('/')
+#def home():
+#    return "알람푸시 테스트"
+
+@app.route('/send-notification') #http://localhost:5000/send-notification 접속시 알람 발송 
+def send_notification():
+    device_token = "DEVICE_TOKEN"
+    title = "Detect "
+    message = "timestamp , 넘어짐이 감지되었습니다 !"
+
+    result = send_push_notification(device_token, title, message)
+
+    return result
 
 
 if __name__ == '__main__':

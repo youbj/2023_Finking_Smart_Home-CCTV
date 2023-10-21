@@ -35,8 +35,8 @@ def get_camera_data():
     cursor = connection.cursor()
 
     # 데이터베이스에서 데이터 조회
-    query = "SELECT * FROM camera_log WHERE id = %s"  # id로 필터링
-    values = ("3801",)
+    query = "SELECT * FROM camera_log3 WHERE id = %s"  # id로 필터링
+    values = ("이연규",) #values 값 고정
     cursor.execute(query, values)
     data = cursor.fetchone()  # 한 레코드만 가져옴 (여러 레코드라면 fetchall() 사용)
 
@@ -63,24 +63,24 @@ def run_fall_detector():
     cursor = connection.cursor()
 
     # 이미 해당 id로 레코드가 있는지 확인
-    check_query = "SELECT * FROM camera_log WHERE id = %s"
-    check_values = ("3801",)
+    check_query = "SELECT * FROM camera_log3 WHERE id = %s"
+    check_values = ("이연규",)
     cursor.execute(check_query, check_values)
     existing_record = cursor.fetchone()
 
     if existing_record:
         # 이미 레코드가 존재하면 해당 레코드를 업데이트
         camera_start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        update_query = "UPDATE camera_log SET camera_start_time = %s WHERE id = %s"
-        update_values = (camera_start_time, "3801")
+        update_query = "UPDATE camera_log3 SET camera_start_time = %s WHERE id = %s"
+        update_values = (camera_start_time, "이연규")
         cursor.execute(update_query, update_values)
         print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     else:
         # 레코드가 없으면 새로 삽입
         camera_start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        insert_query = "INSERT INTO camera_log (id, camera_start_time) VALUES (%s, %s)"
-        insert_values = ("3801", camera_start_time)
+        insert_query = "INSERT INTO camera_log3 (id, camera_start_time) VALUES (%s, %s)"
+        insert_values = ("이연규", camera_start_time)
         cursor.execute(insert_query, insert_values)
 
     connection.commit()  # 데이터베이스에 변경 사항을 커밋.
@@ -124,7 +124,7 @@ def generate_fall_capture():
     return jsonify({"image_path": image_path})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True,port=5001)
+    app.run(host='0.0.0.0',debug=True,port=5000)
 
 
 # 사용법:

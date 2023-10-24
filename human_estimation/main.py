@@ -7,6 +7,7 @@ import numpy as np
 import os
 import datetime
 import time
+import requests
 from tqdm import tqdm
 from flask import Flask, render_template, request, redirect, url_for, jsonify #  Flask, request, jsonify 필수 
 from utils.datasets import letterbox
@@ -40,18 +41,33 @@ def fall_detection(poses):
     return False, None
 
 
-def save_fall_capture(image, save_dir='..\images'):
-    # 저장할 디렉토리를 지정
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+# def save_fall_capture(image, save_dir='..\images'):
+#     # 저장할 디렉토리를 지정
+#     if not os.path.exists(save_dir):
+#         os.makedirs(save_dir)
 
-    # 현재 시간을 기반으로 파일 이름 생성 (타임스탬프 사용)
-    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
+#     # 현재 시간을 기반으로 파일 이름 생성 (타임스탬프 사용)
+#     current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
+#     filename = f'fall_capture_{current_time}.jpg'
+    
+#     # 이미지를 지정된 디렉토리에 저장
+#     save_path = os.path.join(save_dir, filename)
+#     cv2.imwrite(save_path, image)
+
+def generate_image(image, save_dir='..\images'):
+    if not os.path.exists('..\images'):
+        os.makedirs('images')
+
+    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     filename = f'fall_capture_{current_time}.jpg'
     
-    # 이미지를 지정된 디렉토리에 저장
+    # 이미지 파일로 저장
     save_path = os.path.join(save_dir, filename)
     cv2.imwrite(save_path, image)
+    
+    return save_path  # 이미지 파일 경로 반환
+
+    
 
 # 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
@@ -70,8 +86,9 @@ def falling_alarm(image, bbox, prev_fall):
     
     #저장 경로를 저장하는 것
     if not prev_fall:
-        save_path = os.path.join('..\images', filename)        
-        cv2.imwrite(save_path, image)
+        # save_path = os.path.join('..\images', filename)        
+        # cv2.imwrite(save_path, image)
+        generate_image(image)
         
 
 #넘어져 있는 형상이 계속될 때
@@ -118,13 +135,12 @@ def prepare_image(image):
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
 
+
+
+device_index = 1    
+
 @app.route('/upload', methods=['POST']) # api 추가 
-
-
-
-def main():
-
-    device_index = 0
+def main():  
     # 웹캠 캡처를 생성합니다.
     vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
 
@@ -190,6 +206,6 @@ def main():
 
 if __name__ == '__main__':
     # 웹캠 캡쳐
-    vid_cap = cv2.VideoCapture(0)
+    vid_cap = cv2.VideoCapture(device_index)
     
     main()

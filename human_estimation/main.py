@@ -13,10 +13,12 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify # 
 from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
-from push_alarm import send_push_notification
+from push_notifications import send_push_notification
 
 app = Flask(__name__) # 추가해주기 
-UPLOAD_FOLDER = 'images'  # 이미지를 저장하는 디렉토리
+
+UPLOAD_FOLDER = '../images'  # 이미지를 저장하는 디렉토리
+
 def fall_detection(poses):
     for pose in poses:
         xmin, ymin = (pose[2] - pose[4] / 2), (pose[3] - pose[5] / 2)
@@ -42,27 +44,26 @@ def fall_detection(poses):
     return False, None
 
 
-def save_fall_capture(image, save_dir='..\images'):
-    # 저장할 디렉토리를 지정
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+def generate_image(image):
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs('images')
 
-    # 현재 시간을 기반으로 파일 이름 생성 (타임스탬프 사용)
-    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
+    current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     filename = f'fall_capture_{current_time}.jpg'
     
-    # 이미지를 지정된 디렉토리에 저장
-    save_path = os.path.join(save_dir, filename)
+    # 이미지 파일로 저장
+    save_path = os.path.join(UPLOAD_FOLDER, filename)
+
     cv2.imwrite(save_path, image)
 
-# 기본상태에서 넘어짐으로 변경될 때
+# 상태1) 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
     # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
-    # 바운딩 박스 그리기: 빨간색 사각형으로 물체의 위치를 표시
+
         
     current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
-    filename = f'fall_capture_{current_time}.jpg' #파일저장명 // api로 보내기위해서 필요없는 함수가됨 
-    ## 이미지 파일도 저장하고 api로 보내는게 두개가 되는지 확인하려면 filename, save_path주석풀고 확인해봐야함
+    filename = f'fall_capture_{current_time}.jpg' 
+    
     x_min, y_min, x_max, y_max = bbox
     cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
                   thickness=5, lineType=cv2.LINE_AA)
@@ -76,7 +77,7 @@ def falling_alarm(image, bbox, prev_fall):
         cv2.imwrite(save_path, image)
         file_url = f'/upload'  # 업로드 엔드포인트 ,파일을 저장하는 대신에 /upload 엔드포인트로 이동한 URL을 반환
         return file_url
-    
+   
 def is_allowed_file(filename):
     # 허용된 파일 확장자 목록을 지정합니다.
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
@@ -107,15 +108,66 @@ def upload_file():
          # 응답에는 업로드된 파일의 URL도 포함
     return jsonify({'error': 'Invalid file format'})
 
-#넘어져 있는 형상이 계속될 때
+
+
+#상태2) 넘어져 있는 형상이 계속될 때
 def falling_check(image, bbox):
     
     x_min, y_min, x_max, y_max = bbox
     cv2.rectangle(image, (int(x_min), int(y_min)), (int(x_max), int(y_max)), color=(0, 0, 255),
                   thickness=5, lineType=cv2.LINE_AA)
 
-    # 경고 메시지 표시: "Person Fell down" 메시지를 이미지 상단에 표시
     cv2.putText(image, 'Person Fell down', (11, 100), 0, 1, [0, 0, 255], thickness=3, lineType=cv2.LINE_AA)
+    
+# 상태3) 움직임이 인식되지 않은 채 8시간이 경과되었을 때
+def no_movement(image, img_save): 
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    text = "There is no movement.A check is required."
+    
+    # 텍스트 바운더리 가져오기
+    textsize = cv2.getTextSize(text, font, 1, 2)[0]
+
+    # 텍스트 바운더리로 좌표 구하기
+    textX = (image.shape[1] - textsize[0]) // 2
+    textY = (image.shape[0] + textsize[1]) // 2
+    
+    if img_save:
+        generate_image(image)  
+    cv2.putText(image, text, (textX,textY), font, 1, (0, 0, 255),  thickness=4, lineType=cv2.LINE_AA)
+    
+    # 보류: 알람보내는거 함수 만들면 될 듯
+    
+    
+    
+def is_allowed_file(filename):
+    # 허용된 파일 확장자 목록을 지정합니다.
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
+    if file and is_allowed_file(file.filename):
+        # 안전한 파일 이름 생성
+        current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        filename = f'fall_capture_{current_time}.jpg'
+
+        # 이미지 파일 저장
+        save_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(save_path)# save_path는 저장할 경로 및 파일 이름 ,저장
+
+        file_url = f'/get_image/{filename}'  # 이미지의 URL 생성
+        return jsonify({'message': 'File uploaded successfully', 'file_url': file_url})
+         # 파일 업로드가 성공하면 JSON 응답을 반환
+         # 응답에는 업로드된 파일의 URL도 포함
+    return jsonify({'error': 'Invalid file format'})
 
 
 def get_pose_model():
@@ -151,13 +203,15 @@ def prepare_image(image):
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
-#device_index = 0
-#@app.route('/upload', methods=['POST']) # api 추가 
+
+
+device_index = 0
+
 def main():
     # 웹캠 캡처를 생성합니다.
-    #vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
-    vid_cap = cv2.VideoCapture(0)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
-    # Pose 모델을 로드합니다.
+    vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
+    
+
     model, device = get_pose_model()
     
     prev_fall = False    
@@ -189,7 +243,14 @@ def main():
                 prev_fall = is_fall
             else:
                 if is_fall:
-                    falling_check(_image, bbox)                  
+
+                           
+                    
+                    falling_check(_image, bbox)
+            check_time=0
+        else:            
+            check_time+=1               
+
 
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)
@@ -201,10 +262,6 @@ def main():
     # 루프를 빠져나온 후, 리소스를 정리합니다.
     vid_cap.release()
     cv2.destroyAllWindows()
-
-#@app.route('/')
-#def home():
-#    return "알람푸시 테스트"
 
 @app.route('/send-notification') #http://localhost:5000/send-notification 접속시 알람 발송 
 def send_notification():
@@ -223,28 +280,4 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()
-=======
-from flask import Flask, render_template
-from flask_cors import CORS
-from flask_socketio import SocketIO, emit
-
-app = Flask(__name__)
-CORS(app)
-socketio = SocketIO(app,  cors_allowed_origins="*")
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-@socketio.on('message_from_client')
-def handle_message(data):
-    print('Message from client:', data)
-    emit('message_from_server', data)
-
-if __name__ == '__main__':
-    socketio.run(app,host='0.0.0.0',port=5002, debug=True)
 

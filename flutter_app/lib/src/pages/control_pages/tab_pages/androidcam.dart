@@ -35,8 +35,8 @@ class _AppBodyState extends State<AppBody> {
 
   @override
   void initState() {
-    super.initState();
     _initializeCamera();
+    super.initState();
   }
 
   Future<void> _initializeCamera() async {
@@ -48,9 +48,7 @@ class _AppBodyState extends State<AppBody> {
       ResolutionPreset.max,
       enableAudio: false, // 오디오 사용 여부 설정
     );
-
     await _controller.initialize();
-
     if (mounted) {
       setState(() {});
     }

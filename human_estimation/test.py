@@ -1,3 +1,4 @@
+
 import matplotlib.pyplot as plt
 import torch
 import cv2
@@ -13,7 +14,9 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
 from push_notifications import send_push_notification
-
+from flask import Flask, render_template
+from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 app = Flask(__name__) # 추가해주기 
 UPLOAD_FOLDER = 'images'  # 이미지를 저장하는 디렉토리
 def fall_detection(poses):
@@ -222,3 +225,26 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()
+
+
+
+app = Flask(__name__)
+CORS(app)
+socketio = SocketIO(app,  cors_allowed_origins="*")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('message_from_client')
+def handle_message(data):
+    print('Message from client:', data)
+    emit('message_from_server', data)
+
+if __name__ == '__main__':
+    socketio.run(app,host='0.0.0.0',port=5002, debug=True)
+

@@ -45,12 +45,12 @@ class LoginWidget extends StatelessWidget {
               ),
               SizedBox(
                 //color: Colors.red,
-                width: size.width * 0.6,
+                width: size.width * 0.8,
                 height: size.height * 0.3,
                 child: Column(
                   children: [
                     SizedBox(
-                      width: size.width * 0.45,
+                      width: size.width * 0.75,
                       //color: Colors.blueGrey,
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,7 @@ class LoginWidget extends StatelessWidget {
                     Container(
                       width: size.width * 0.45,
                       height: 45,
-                      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             textStyle: TextStyle(

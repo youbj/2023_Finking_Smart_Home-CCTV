@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:guardian/src/widgets/CustomStyle.dart';
 import 'LoginPage.dart';
 import 'OnboardingPage.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class First extends StatelessWidget {
   const First({super.key});

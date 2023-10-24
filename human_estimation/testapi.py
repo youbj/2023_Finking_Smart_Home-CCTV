@@ -95,7 +95,7 @@ def run_fall_detector():
 def upload_file():
     if 'file' not in request.files:
         return '파일이 없습니다.'
-    
+##    
     file = request.files['file']
     
     if file.filename == '': #파일의 이름이 비어있다면 

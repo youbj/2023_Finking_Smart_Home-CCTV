@@ -92,6 +92,7 @@ class _PageholderState extends State<Pageholder> {
                               icon: Icon(
                                 Icons.notifications,
                                 size: 30,
+
                               ),
                               onPressed: () =>
                                   Scaffold.of(context).openEndDrawer(),

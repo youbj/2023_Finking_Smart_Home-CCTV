@@ -56,7 +56,8 @@ dependencies:
     socket_io_client: ^2.0.3
     provider: ^6.0.5
     flutter_webrtc: ^0.9.45
-
+    quiver: 3.2.1
+    
 dev_dependencies:
     flutter_test:
         sdk: flutter

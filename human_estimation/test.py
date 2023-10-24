@@ -13,7 +13,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify # 
 from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
-from push_alarm import send_push_notification
+from push_notifications import send_push_notification
 
 app = Flask(__name__) # 추가해주기 
 UPLOAD_FOLDER = 'images'  # 이미지를 저장하는 디렉토리

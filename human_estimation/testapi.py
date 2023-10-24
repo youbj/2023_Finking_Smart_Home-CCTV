@@ -94,7 +94,7 @@ def run_fall_detector():
     # 연결 및 커서 닫기
     cursor.close()
     connection.close()
-
+##
     return 'Fall Detector is running!'
 
 # 넘어진 감지 스크린샷 프론트로 api전송 

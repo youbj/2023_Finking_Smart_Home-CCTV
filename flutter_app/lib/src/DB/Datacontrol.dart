@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 
-Future<Map<String, dynamic>> getCameraData() async { //실제 사용 X 
+Future<Map<String, dynamic>> getCameraData() async {
+
   var baseUrl = Uri.parse('http://172.20.10.3:5001/get_camera_data');
 
   final response = await http.get(baseUrl);

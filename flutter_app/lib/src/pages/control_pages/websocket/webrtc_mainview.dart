@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:guardian/src/pages/control_pages/websocket/webrtc_controller.dart';
 
-class WebRTCView extends StatefulWidget {
-  const WebRTCView({Key? key, this.controller}) : super(key: key);
+class WebRTCMainView extends StatefulWidget {
+  const WebRTCMainView({Key? key, this.controller}) : super(key: key);
 
   final WebRTCController? controller;
 
   @override
-  State<WebRTCView> createState() => _WebRTCViewState();
+  State<WebRTCMainView> createState() => _WebRTCMainViewState();
 }
 
-class _WebRTCViewState extends State<WebRTCView> {
+class _WebRTCMainViewState extends State<WebRTCMainView> {
   late final WebRTCController _controller;
   final ValueNotifier<bool> _btnNotifier = ValueNotifier<bool>(false);
 

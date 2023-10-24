@@ -41,6 +41,7 @@ def fall_detection(poses):
     return False, None
 
 
+
 def generate_image(image, save_dir='..\images'):
     if not os.path.exists('..\images'):
         os.makedirs('images')
@@ -51,7 +52,6 @@ def generate_image(image, save_dir='..\images'):
     # 이미지 파일로 저장
     save_path = os.path.join(save_dir, filename)
     cv2.imwrite(save_path, image)
-    
     
 
 # 기본상태에서 넘어짐으로 변경될 때
@@ -137,6 +137,8 @@ def prepare_image(image):
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
 
+
+device_index = 1    
 
 def main():  
     # 웹캠 캡처를 생성합니다.

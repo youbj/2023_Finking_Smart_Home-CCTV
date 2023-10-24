@@ -223,7 +223,6 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()
-=======
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit

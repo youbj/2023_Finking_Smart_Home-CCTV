@@ -116,16 +116,25 @@ def upload_file():
 #     return '파일 업로드 완료'
 
 
-# 유병주가 개발 중
-@app.route('/generate_fall_capture', methods=['POST'])
-def generate_fall_capture():
-    data = request.get_json()
-    image_path = main.generate_image(data.get('..\image'))  # 이미지 파일 경로 가져오기
+# # 유병주가 개발 중
+# @app.route('/generate_fall_capture', methods=['POST'])
+# def generate_fall_capture():
+#     data = request.get_json()
+#     image_path = main.generate_image(data.get('..\image'))  # 이미지 파일 경로 가져오기
     
-    return jsonify({"image_path": image_path})
+#     return jsonify({"image_path": image_path})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True,port=5000)
+
+    # MySQL 연결 생성
+    connection = mysql.connector.connect(**db_config)
+
+    # 커서 생성
+    cursor = connection.cursor()
+    
+    cursor.execute("use flask")
+    app.run(host='0.0.0.0',debug=True,port=5001)
+
 
 
 # 사용법:

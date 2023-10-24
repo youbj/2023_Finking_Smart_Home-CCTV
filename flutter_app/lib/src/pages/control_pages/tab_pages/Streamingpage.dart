@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../websocket/webrtc_controller.dart';
-import '../websocket/webrtc_view.dart';
+import '../websocket/webrtc_mainview.dart';
+import '../websocket/webrtc_peerview.dart';
 
 class Streamingpage extends StatefulWidget {
   const Streamingpage({Key? key}) : super(key: key);
@@ -18,6 +19,17 @@ class _StreamingpageState extends State<Streamingpage> {
   void initState() {
     super.initState();
     _controller.initHandler();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // 수정 필요 --> 소켓 재접속 관련
+    super.didChangeDependencies();
+    print('실행은 함');
+    if (!_controller.isSocketConnected()) {
+      print('재접속');
+      _controller.initHandler();
+    }
   }
 
   @override
@@ -49,6 +61,18 @@ class _StreamingpageState extends State<Streamingpage> {
           appBar: screenState == ScreenState.initDone
               ? AppBar(
                   title: const Text('Online User list'),
+                  actions: <Widget>[
+                    IconButton(
+                      icon: const Icon(
+                        Icons.restart_alt,
+                        color: Colors.white,
+                      ),
+                      tooltip: 'list reset',
+                      onPressed: () async {
+                        await _controller.requsetList();
+                      },
+                    ),
+                  ],
                 )
               : null,
           body: body,
@@ -130,16 +154,6 @@ class _StreamingpageState extends State<Streamingpage> {
                     child: Icon(Icons.call),
                   ),
                 ),
-                InkWell(
-                  onTap: () async {
-                    await _controller.refuseOffer();
-                  },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    child: Icon(Icons.close),
-                  ),
-                ),
               ],
             ),
           ),
@@ -153,7 +167,7 @@ class _StreamingpageState extends State<Streamingpage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => WebRTCView(
+        builder: (_) => WebRTCPeerView(
           controller: _controller,
         ),
       ),

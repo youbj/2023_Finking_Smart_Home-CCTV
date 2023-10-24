@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:guardian/src/pages/control_pages/websocket/webrtc_socket.dart';
@@ -57,7 +59,6 @@ class WebRTCController extends WebRTCSocket {
   Future<void> initHandler() async {
     await _initSocket();
     await _initPeer();
-
     await localRenderer!.initialize();
     await remoteRenderer!.initialize();
 
@@ -85,6 +86,7 @@ class WebRTCController extends WebRTCSocket {
 
     if (_from != null) {
       super.socketOn('updateUserlist', _updateUserList);
+      super.socketOn('list', _listOn);
       super.socketOn('connect_error', (data) {
         debugPrint('[socket] error : $data');
       });
@@ -122,6 +124,19 @@ class WebRTCController extends WebRTCSocket {
     list.removeWhere((element) => element == super.user);
 
     userListNotifier.value = list;
+  }
+
+  /// [소켓] 리스트 호출
+  void _listOn(data) {
+    debugPrint('[socket] userList update $data');
+    Map<String, dynamic> map = Map.castFrom(data);
+    List<String> lists = List.from(map['userLists']);
+    debugPrint('[socket] list : $lists');
+    userListNotifier.value = lists;
+  }
+
+  Future<void> requsetList() async {
+    super.socketEmit('list', {});
   }
 
   /// [본인] 영상통화 offer 보냄

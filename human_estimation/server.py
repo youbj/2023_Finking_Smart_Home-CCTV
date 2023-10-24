@@ -9,7 +9,6 @@ socketio = SocketIO(app,  cors_allowed_origins="*")
 
 userList = []
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -23,7 +22,14 @@ def handle_connect():
     socketio.emit('updateUserlist', {'userList': userList})
     print(f'[connect] userList sent: {userList}')
 
+@socketio.on('list')
+def handle_list(data): 
+#호출시 유저 리스트 보냄
 
+    socketio.emit('list', {'userLists': userList})
+    print(f'[liston] userList sent: {userList}')
+
+ 
 #offer가 왔을 때 처리
 #1. [caller] 본인 아이디, 상대 아이디, offer data 전달
 #2. 상대에게 본인 아이디, offer data 전달

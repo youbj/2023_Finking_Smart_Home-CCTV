@@ -25,7 +25,7 @@ def fall_detection(poses):
         left_shoulder_x = pose[22]
         right_shoulder_y = pose[26]
         left_body_y = pose[41]
-        left_body_x = pose[40]
+        left_body_x = pose[40] 
         right_body_y = pose[44]
         len_factor = math.sqrt(((left_shoulder_y - left_body_y) ** 2 + (left_shoulder_x - left_body_x) ** 2))
         left_foot_y = pose[53]

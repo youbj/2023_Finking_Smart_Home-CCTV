@@ -1,5 +1,5 @@
 from pyfcm import FCMNotification
-ㅇ
+
 # FCM 서버 키
 fcm_server_key = "kakaotalk에있음 " #깃에 못올리니 톡방에 키 올려둠 / 파이어베이스에서 가져다가 쓰면됨
 

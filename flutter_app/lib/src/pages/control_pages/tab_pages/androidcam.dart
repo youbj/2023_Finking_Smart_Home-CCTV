@@ -26,8 +26,6 @@ class CameraApp extends StatelessWidget {
 }
 
 class AppBody extends StatefulWidget {
-  const AppBody({super.key});
-
   @override
   _AppBodyState createState() => _AppBodyState();
 }

@@ -1,14 +1,11 @@
-import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/DB/Datacontrol.dart';
 import 'package:guardian/src/pages/register_login/fisrt.dart';
 import '../../widgets/common_switch.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'tab_pages/androidcam.dart';
 import 'websocket/webrtc_controller.dart';
-import 'websocket/webrtc_mainview.dart';
+import 'websocket/webrtc_peerview.dart';
 
 class Pageholder extends StatefulWidget {
   const Pageholder({Key? key}) : super(key: key);
@@ -34,13 +31,6 @@ class _PageholderState extends State<Pageholder> {
     super.dispose();
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   //재구성할 때
-  //   super.didChangeDependencies();
-  //   _controller.initHandler();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ScreenState>(
@@ -58,6 +48,7 @@ class _PageholderState extends State<Pageholder> {
             body = _initDone();
             break;
           case ScreenState.receivedCalling:
+            body = _receivedCalling();
             // Not use
             break;
         }
@@ -92,7 +83,6 @@ class _PageholderState extends State<Pageholder> {
                               icon: Icon(
                                 Icons.notifications,
                                 size: 30,
-
                               ),
                               onPressed: () =>
                                   Scaffold.of(context).openEndDrawer(),
@@ -117,51 +107,9 @@ class _PageholderState extends State<Pageholder> {
       /** 메인페이지 */
       _mainPage(),
       /** 감지 페이지 */
-      Container(
-        child: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              // 버튼을 누를 때마다 ListTile 추가
-              setState(() {
-                drawerItems.add(
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
-                    child: ListTile(
-                      leading: Icon(Icons.security),
-                      title: Text(
-                        'Time:에 감지 기록이 발생하였습니다.',
-                      ),
-                    ),
-                  ),
-                );
-                itemCount++;
-              });
-            },
-            child: Text('Add ListTile to Drawer'),
-          ),
-        ),
-      ),
+      _detectPage(),
       /** 이벤트 페이지 */
-      Container(
-        child: ListView(
-          padding: const EdgeInsets.all(10),
-          children: [
-            Card(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    title: Text('예시용'),
-                    subtitle: Text(
-                      '가격 원',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      _eventPage(),
       /** 환경설정 */
       _controlPage()
     ]);
@@ -251,13 +199,112 @@ class _PageholderState extends State<Pageholder> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => WebRTCMainView(
+        builder: (_) => WebRTCPeerView(
           controller: _controller,
         ),
       ),
     ).whenComplete(() {
       _controller.screenNotifier.value = ScreenState.initDone;
     });
+  }
+
+  Widget _receivedCalling() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ValueListenableBuilder<bool>(
+          valueListenable: _controller.localVideoNotifier,
+          builder: (_, value, __) {
+            return value
+                ? RTCVideoView(
+                    _controller.localRenderer!,
+                    objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+                  )
+                : const Center(child: Icon(Icons.person_off));
+          },
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    _controller.sendAnswer();
+                    _moveToVideoView();
+                  },
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    child: Icon(Icons.call),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  /// 감지 페이지
+  Widget _detectPage() {
+    return Container(
+      child: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            // 버튼을 누를 때마다 ListTile 추가
+            CameraData cameraData = await fetchData();
+            setState(() {
+              drawerItems.add(
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                  child: ListTile(
+                    leading: Icon(Icons.security),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('사용자 ${cameraData.id}의 CCTV에서'),
+                        Text(' ${cameraData.cameraStartTime}에'),
+                        Text('위험이 감지되었습니다!'),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              itemCount++;
+            });
+          },
+          child: Text('Add ListTile to Drawer'),
+        ),
+      ),
+    );
+  }
+
+  /// 이벤트 페이지
+  Widget _eventPage() {
+    return Container(
+      child: ListView(
+        padding: const EdgeInsets.all(10),
+        children: [
+          Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  title: Text('예시용'),
+                  subtitle: Text(
+                    '가격 원',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   /// 환경설정 페이지

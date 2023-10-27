@@ -1,3 +1,4 @@
+
 import matplotlib.pyplot as plt
 import torch
 import cv2
@@ -26,7 +27,7 @@ def fall_detection(poses):
         left_shoulder_x = pose[22]
         right_shoulder_y = pose[26]
         left_body_y = pose[41]
-        left_body_x = pose[40]
+        left_body_x = pose[40] 
         right_body_y = pose[44]
         len_factor = math.sqrt(((left_shoulder_y - left_body_y) ** 2 + (left_shoulder_x - left_body_x) ** 2))
         left_foot_y = pose[53]
@@ -52,11 +53,13 @@ def generate_image(image):
     
     # 이미지 파일로 저장
     save_path = os.path.join(UPLOAD_FOLDER, filename)
+
     cv2.imwrite(save_path, image)
 
 # 상태1) 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
     # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
+
         
     current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   
     filename = f'fall_capture_{current_time}.jpg' 
@@ -74,6 +77,38 @@ def falling_alarm(image, bbox, prev_fall):
         cv2.imwrite(save_path, image)
         file_url = f'/upload'  # 업로드 엔드포인트 ,파일을 저장하는 대신에 /upload 엔드포인트로 이동한 URL을 반환
         return file_url
+   
+def is_allowed_file(filename):
+    # 허용된 파일 확장자 목록을 지정합니다.
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
+    if file and is_allowed_file(file.filename):
+        # 안전한 파일 이름 생성
+        current_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        filename = f'fall_capture_{current_time}.jpg'
+
+        # 이미지 파일 저장
+        save_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(save_path)# save_path는 저장할 경로 및 파일 이름 ,저장
+
+        file_url = f'/get_image/{filename}'  # 이미지의 URL 생성
+        return jsonify({'message': 'File uploaded successfully', 'file_url': file_url})
+         # 파일 업로드가 성공하면 JSON 응답을 반환
+         # 응답에는 업로드된 파일의 URL도 포함
+    return jsonify({'error': 'Invalid file format'})
+
+
 
 #상태2) 넘어져 있는 형상이 계속될 때
 def falling_check(image, bbox):
@@ -161,12 +196,14 @@ def get_pose(image, model, device):
     return image, output
 
 
+
 def prepare_image(image):
     _image = image[0].permute(1, 2, 0) * 255
     _image = _image.cpu().numpy().astype(np.uint8)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
+
 
 device_index = 0
 
@@ -195,29 +232,25 @@ def main():
         # 웹캠 프레임(frame)을 처리하고 필요한 작업을 수행합니다.
         image, output = get_pose(frame, model, device)
         _image = prepare_image(image)
-        is_fall, bbox = fall_detection(output)    
-        
-        if(check_time>=28800): #8시간 60*60*8 
-            if check_time%30==0: #움직임이 감지되지 않는다면 30초에 한번씩 이미지 저장
-                img_save = True
-            else: 
-                img_save = False
-            no_movement(_image, img_save)
-            
-            continue
-           
+        is_fall, bbox = fall_detection(output)       
+
         # 넘어지는 즉시 사진
         if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
             if is_fall != prev_fall:
                 if is_fall:
+                    # 넘어짐 감지된 이미지 저장
                     falling_alarm(_image, bbox, prev_fall)
                 prev_fall = is_fall
             else:
                 if is_fall:
+
+                           
+                    
                     falling_check(_image, bbox)
             check_time=0
         else:            
             check_time+=1               
+
 
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)
@@ -247,3 +280,4 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()
+

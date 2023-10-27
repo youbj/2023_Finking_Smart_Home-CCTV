@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:guardian/src/pages/control_pages/websocket/webrtc_socket.dart';
@@ -49,6 +47,8 @@ class WebRTCController extends WebRTCSocket {
 
   /// 본인 비디오
   MediaStream? _localStream;
+
+  String? videostate;
 
   /// iceCandidate 연결 여부
   bool _isConnected = false;
@@ -298,11 +298,80 @@ class WebRTCController extends WebRTCSocket {
     }
   }
 
+  /// [본인] 스트리밍 on
+  Future<void> turnOnStreamming() async {
+    videostate = 'environment';
+    try {
+      _localStream = await navigator.mediaDevices.getUserMedia({
+        'video': audioOnly
+            ? false
+            : {'facingMode': videostate}, //facingMode user는 전면
+        'audio': {
+          'autoGainControl': false,
+          'channelCount': 2,
+          'echoCancellation': false,
+          'latency': 0,
+          'noiseSuppression': false,
+          'sampleRate': 48000,
+          'sampleSize': 16,
+          'volume': 1.0
+        }
+      });
+
+      localRenderer!.srcObject = _localStream;
+
+      localVideoNotifier.value = true;
+
+      localRenderer?.muted = true;
+    } catch (e) {
+      debugPrint('[webRTC] media error : $e');
+    }
+  }
+
+  /// [본인] 스트리밍 카메라 전환
+  Future<void> turnOffStreamming() async {
+    try {
+      if (_localStream != null) {
+        _localStream!.getTracks().forEach((track) {
+          track.stop();
+          _localStream = null;
+        });
+      }
+
+      // 현재 상태를 확인하여 반대의 카메라를 선택
+      final newFacingMode = (videostate == 'user') ? 'environment' : 'user';
+      _localStream = await navigator.mediaDevices.getUserMedia({
+        'video': audioOnly ? false : {'facingMode': newFacingMode},
+        'audio': {
+          'autoGainControl': false,
+          'channelCount': 2,
+          'echoCancellation': false,
+          'latency': 0,
+          'noiseSuppression': false,
+          'sampleRate': 48000,
+          'sampleSize': 16,
+          'volume': 1.0
+        }
+      });
+
+      localRenderer!.srcObject = _localStream;
+
+      localVideoNotifier.value = true;
+
+      localRenderer?.muted = true;
+
+      // 업데이트된 카메라 방향 저장
+      videostate = newFacingMode;
+    } catch (e) {
+      debugPrint('[webRTC] media error : $e');
+    }
+  }
+
   /// [본인] 미디어 on
   Future<void> turnOnMedia() async {
     try {
       _localStream = await navigator.mediaDevices.getUserMedia({
-        'video': audioOnly ? false : {'facingMode': 'user'},
+        'video': audioOnly ? false : {'facingMode': 'environment'},
         'audio': {
           'autoGainControl': false,
           'channelCount': 2,

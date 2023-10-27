@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../widgets/CustomStyle.dart';
 
 class LoginWidget extends StatelessWidget {
@@ -44,12 +45,12 @@ class LoginWidget extends StatelessWidget {
               ),
               SizedBox(
                 //color: Colors.red,
-                width: size.width * 0.8,
+                width: size.width * 0.6,
                 height: size.height * 0.3,
                 child: Column(
                   children: [
                     SizedBox(
-                      width: size.width * 0.75,
+                      width: size.width * 0.45,
                       //color: Colors.blueGrey,
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +98,7 @@ class LoginWidget extends StatelessWidget {
                     Container(
                       width: size.width * 0.45,
                       height: 45,
-                      margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             textStyle: TextStyle(
@@ -139,3 +140,7 @@ class LoginWidget extends StatelessWidget {
     );
   }
 }
+
+//Navigator.of(context).pushReplacement(MaterialPageRoute(
+//               builder: (context) => OnBoardingPage(),
+//              ));

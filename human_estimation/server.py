@@ -9,27 +9,21 @@ socketio = SocketIO(app,  cors_allowed_origins="*")
 
 userList = []
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @socketio.on('connect')
-def handle_connect():
+def handle_connection():
     userId = request.sid
     userList.append(userId)
 #유저 연결시 데이터 보냄
-    print(f'[connect] userLogin: {userId}')
+    print(f'[connection] userLogin: {userId}')
     socketio.emit('updateUserlist', {'userList': userList})
-    print(f'[connect] userList sent: {userList}')
+    print(f'[connection] userList sent: {userList}')
 
-@socketio.on('list')
-def handle_list(data): 
-#호출시 유저 리스트 보냄
 
-    socketio.emit('list', {'userLists': userList})
-    print(f'[liston] userList sent: {userList}')
-
- 
 #offer가 왔을 때 처리
 #1. [caller] 본인 아이디, 상대 아이디, offer data 전달
 #2. 상대에게 본인 아이디, offer data 전달
@@ -80,7 +74,7 @@ def handle_disconnect_peer(data):
     if to is not None:
         socketio.emit('disconnectPeer', room=to)
 
-#연결 해제시 userlist update 
+#연결 해제시 userlist update
 @socketio.on('disconnect')
 def handle_disconnect():
     userId = request.sid
@@ -89,4 +83,4 @@ def handle_disconnect():
     print(f'[disconnected] id: {userId}')
 
 if __name__ == '__main__':
-    socketio.run(app,host='172.20.10.3', port=5002,debug=True )
+    socketio.run(app,host='192.168.0.13', port=5002,debug=True )

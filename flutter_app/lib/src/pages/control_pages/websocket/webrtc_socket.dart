@@ -9,7 +9,7 @@ class WebRTCSocket {
   Future<String?> connectSocket() {
     final Completer<String> completer = Completer<String>();
 
-    _socket = io.io('http://172.20.10.3:5002', <String, dynamic>{
+    _socket = io.io('http://192.168.0.30:5000', <String, dynamic>{
       'transports': ['websocket'],
     });
 

@@ -26,6 +26,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+//-추가
 android {
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -70,8 +71,20 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation platform('com.google.firebase:firebase-bom:32.0.0')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.android.support:multidex:2.0.1'
+  // ...
+
+  // Import the Firebase BoM
+  implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
+  // When using the BoM, you don't specify versions in Firebase library dependencies
+
+  // Add the dependency for the Firebase SDK for Google Analytics
+  implementation("com.google.firebase:firebase-analytics")
+
+  // TODO: Add the dependencies for any other Firebase products you want to use
+  // See https://firebase.google.com/docs/android/setup#available-libraries
+  // For example, add the dependencies for Firebase Authentication and Cloud Firestore
+  implementation("com.google.firebase:firebase-auth")
+  implementation("com.google.firebase:firebase-firestore")
+  implementation("com.google.firebase:firebase-messaging:20.0.0")
 }

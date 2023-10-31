@@ -1,14 +1,20 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/DB/Datacontrol.dart';
 import 'package:guardian/src/pages/register_login/fisrt.dart';
+import 'package:guardian/src/widgets/CustomStyle.dart';
 import '../../widgets/common_switch.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'tab_pages/androidcam.dart';
 import 'websocket/webrtc_controller.dart';
 import 'websocket/webrtc_mainview.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 class Pageholder extends StatefulWidget {
   const Pageholder({Key? key}) : super(key: key);
@@ -120,24 +126,37 @@ class _PageholderState extends State<Pageholder> {
       Container(
         child: Center(
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: ()  async{
               // 버튼을 누를 때마다 ListTile 추가
-              setState(() {
-                drawerItems.add(
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
-                    child: ListTile(
-                      leading: Icon(Icons.security),
-                      title: Text(
-                        'Time:에 감지 기록이 발생하였습니다.',
-                      ),
-                    ),
-                  ),
-                );
-                itemCount++;
-              });
+               CameraData cameraData = await fetchData();
+                      setState(() {
+                        drawerItems.add(
+                          Container(
+                            padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                            child: ListTile(
+                              leading: Icon(Icons.security),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('사용자 ${cameraData.id}의 CCTV에서'),
+                                  Text(' ${cameraData.cameraStartTime}에!!@@@'),
+                                  //Text(' ${cameraData.imageurl}에!!@@@'),
+                                  //Image.file(File(cameraData.imageurl)), // 로컬 파일로부터 이미지 표시
+                                  //Image.network(' ${cameraData.imageurl}에2222'),
+                                  //Image.network('https://cdn.academicnews.co.kr/news/photo/202212/4904_5721_3551.png'),
+                                  Image.asset('assets/images/fall_capture_20231030011159.jpg'),
+                                  Image.asset('assets/images/fall_capture_cameraData.cameraStartTime.jpg'),
+                                  Image.file(File('C:/Users/20map/Desktop/up.png')),
+                                  Text('위험이 감지되었습니다!'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                        itemCount++;
+                        });
             },
-            child: Text('Add ListTile to Drawer'),
+            child: Text('Add ListTile to Drawer!'),
           ),
         ),
       ),
@@ -159,6 +178,7 @@ class _PageholderState extends State<Pageholder> {
                 ],
               ),
             ),
+           ElevatedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>CameraApp()));}, child: Text('이미지 전송 테스트')),
           ],
         ),
       ),

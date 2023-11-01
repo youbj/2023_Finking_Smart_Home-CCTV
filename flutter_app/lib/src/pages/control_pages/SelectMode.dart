@@ -1,30 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/pageholder.dart';
-import 'package:guardian/src/pages/control_pages/tab_pages/Streamingpage.dart';
 
-import 'websocket/webrtc_controller.dart';
+import 'CCTV/Streamingpage.dart';
 
-class SelectMode extends StatefulWidget {
+class SelectMode extends StatelessWidget {
   const SelectMode({super.key});
-  @override
-  State<SelectMode> createState() => _SelectModeState();
-}
-
-class _SelectModeState extends State<SelectMode> {
-  // final WebRTCController _controller = WebRTCController();
-
-  // @override
-  // void initState() {
-  //   // initState에서 현재 시간을 업데이트합니다.
-  //   _controller.initHandler();
-  //   super.initState();
-  // }
-
-  // @override
-  // void dispose() {
-  //   _controller.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +32,9 @@ class _SelectModeState extends State<SelectMode> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Streamingpage(),
-                      ));
+                    context,
+                    MaterialPageRoute(builder: (context) => Streamingpage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -89,9 +68,10 @@ class _SelectModeState extends State<SelectMode> {
               height: 200,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => Pageholder(),
-                  ));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Pageholder()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -119,7 +99,7 @@ class _SelectModeState extends State<SelectMode> {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -24,9 +24,7 @@ void configureFcmMessageHandling() {
     }
   });
 
-  FirebaseMessaging.instance
-      .getInitialMessage()
-      .then((RemoteMessage? message) {
+  FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) { //
     if (message != null) {
       if (message.notification != null) {
         logger.e(message.notification!.title);

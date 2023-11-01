@@ -128,7 +128,29 @@ class _PageholderState extends State<Pageholder> {
           child: ElevatedButton(
             onPressed: ()  async{
               // 버튼을 누를 때마다 ListTile 추가
-               CameraData cameraData = await fetchData();
+               CameraData cameraData = await fetchData();//여기서 데이터를 받아옴
+                     //*snackbar 작업
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                       content: Row(
+                        children: [
+                          Icon(Icons.warning, color: Colors.yellow), // 아이콘 추가
+                            SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격 조절
+                              Text('넘어짐이 감지되었습니다!'),
+                              ],
+                                ),
+                                duration: Duration(seconds: 3),
+                                backgroundColor: Colors.red, // 스낵바의 배경색 변경
+                                action: SnackBarAction(
+                                  label: '닫기',
+                                  onPressed: () {
+                                    // 스낵바를 닫는 작업 추가
+                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  },
+                                ),
+                              ),
+                                          );
+                                          //*snackbar 작업
                       setState(() {
                         drawerItems.add(
                           Container(
@@ -139,14 +161,9 @@ class _PageholderState extends State<Pageholder> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('사용자 ${cameraData.id}의 CCTV에서'),
-                                  Text(' ${cameraData.cameraStartTime}에!!@@@'),
-                                  //Text(' ${cameraData.imageurl}에!!@@@'),
-                                  //Image.file(File(cameraData.imageurl)), // 로컬 파일로부터 이미지 표시
-                                  //Image.network(' ${cameraData.imageurl}에2222'),
-                                  //Image.network('https://cdn.academicnews.co.kr/news/photo/202212/4904_5721_3551.png'),
+                                  Text(' ${cameraData.cameraStartTime}에'),
                                   Image.asset('assets/images/fall_capture_20231030011159.jpg'),
-                                  Image.asset('assets/images/fall_capture_cameraData.cameraStartTime.jpg'),
-                                  Image.file(File('C:/Users/20map/Desktop/up.png')),
+                 
                                   Text('위험이 감지되었습니다!'),
                                 ],
                               ),

@@ -73,7 +73,7 @@ def falling_alarm(image, bbox, prev_fall):
         save_path = os.path.join('C:\\Users\\20map\\Desktop\\Jaewon2\\2023_Finking_Smart_Home-CCTV\\flutter_app\\assets\\images', filename)
         cv2.imwrite(save_path, image)
         file_url = f'/upload'  # 업로드 엔드포인트 ,파일을 저장하는 대신에 /upload 엔드포인트로 이동한 URL을 반환
-        return file_url
+        return file_url 
 
 #상태2) 넘어져 있는 형상이 계속될 때
 def falling_check(image, bbox):

@@ -1,3 +1,4 @@
+
 import matplotlib.pyplot as plt
 import requests
 import torch
@@ -39,7 +40,7 @@ def fall_detection(poses):
         left_shoulder_x = pose[22]
         right_shoulder_y = pose[26]
         left_body_y = pose[41]
-        left_body_x = pose[40]
+        left_body_x = pose[40] 
         right_body_y = pose[44]
         len_factor = math.sqrt(((left_shoulder_y - left_body_y) ** 2 + (left_shoulder_x - left_body_x) ** 2))
         left_foot_y = pose[53]
@@ -65,12 +66,13 @@ def generate_image(image):
     
     # 이미지 파일로 저장
     save_path = os.path.join(UPLOAD_FOLDER, filename)
+
     cv2.imwrite(save_path, image)
 
 # 상태1) 기본상태에서 넘어짐으로 변경될 때
 def falling_alarm(image, bbox, prev_fall):
     # 해당 함수가 넘어짐이 발생했을 때 어떻게 할 것인가 나타내는 함수
-    
+
     #MySQL 연결 생성
     connection = mysql.connector.connect(**db_config)
     #커서 생성
@@ -199,12 +201,14 @@ def get_pose(image, model, device):
     return image, output
 
 
+
 def prepare_image(image):
     _image = image[0].permute(1, 2, 0) * 255
     _image = _image.cpu().numpy().astype(np.uint8)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     _image = cv2.cvtColor(_image, cv2.COLOR_RGB2BGR)
     return _image
+
 
 device_index = 0
 
@@ -232,6 +236,7 @@ def main():
         # 웹캠 프레임(frame)을 처리하고 필요한 작업을 수행합니다.
         image, output = get_pose(frame, model, device)
         _image = prepare_image(image)
+
         is_fall, bbox = fall_detection(output)    
         img_save = True
         
@@ -244,18 +249,24 @@ def main():
             
             continue
         
+
         # 넘어지는 즉시 사진
         if is_fall is not None:  # 넘어짐 감지 결과가 있는 경우
             if is_fall != prev_fall:
                 if is_fall:
+                    # 넘어짐 감지된 이미지 저장
                     falling_alarm(_image, bbox, prev_fall)
                 prev_fall = is_fall
             else:
                 if is_fall:
+
+                           
+                    
                     falling_check(_image, bbox)
             check_time=0
         else:            
             check_time+=1               
+
 
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)
@@ -285,3 +296,4 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()
+

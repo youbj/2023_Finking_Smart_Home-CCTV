@@ -9,9 +9,8 @@ class WebRTCSocket {
   Future<String?> connectSocket() {
     final Completer<String> completer = Completer<String>();
 
-    _socket = io.io('http://172.20.10.3:5002', <String, dynamic>{
-      'transports': ['websocket'],
-    });
+    _socket = io.io('http://192.168.0.32:5002/',
+        io.OptionBuilder().setTransports(['websocket']).build());
 
     _socket.onConnect((data) {
       user = _socket.id;
@@ -21,10 +20,6 @@ class WebRTCSocket {
     });
 
     return completer.future;
-  }
-
-  bool isSocketConnected() {
-    return _socket.connected; // 연결이 있으면 true, 그렇지 않으면 false를 반환
   }
 
   void socketOn(String event, void Function(dynamic) callback) {

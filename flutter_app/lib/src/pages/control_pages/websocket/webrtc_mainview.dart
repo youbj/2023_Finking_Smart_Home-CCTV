@@ -36,24 +36,17 @@ class _WebRTCMainViewState extends State<WebRTCMainView> {
       },
       child: SafeArea(
         child: Scaffold(
+          appBar: AppBar(
+            title: const Text('CCTV Mode'),
+          ),
           body: GestureDetector(
             onTap: () {
               _btnNotifier.value = !_btnNotifier.value;
             },
             child: Stack(
               children: [
-                _videoWidget(_controller.remoteVideoNotifier,
-                    _controller.remoteRenderer!),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20),
-                    height: 160,
-                    width: 120,
-                    child: _videoWidget(_controller.localVideoNotifier,
-                        _controller.localRenderer!),
-                  ),
-                ),
+                _videoWidget(
+                    _controller.localVideoNotifier, _controller.localRenderer!),
                 _btnWidget()
               ],
             ),
@@ -74,31 +67,6 @@ class _WebRTCMainViewState extends State<WebRTCMainView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    InkWell(
-                      onTap: () async {
-                        if (_controller.localVideoNotifier.value) {
-                          await _controller.turnOffMedia();
-                        } else {
-                          await _controller.turnOnMedia();
-                        }
-                      },
-                      child: ValueListenableBuilder<bool>(
-                        valueListenable: _controller.localVideoNotifier,
-                        builder: (_, camOn, __) {
-                          return camOn
-                              ? const CircleAvatar(
-                                  backgroundColor: Colors.yellow,
-                                  foregroundColor: Colors.white,
-                                  child: Icon(Icons.videocam_off),
-                                )
-                              : const CircleAvatar(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
-                                  child: Icon(Icons.videocam),
-                                );
-                        },
-                      ),
-                    ),
                     InkWell(
                       onTap: () async {
                         await _controller.close(null);

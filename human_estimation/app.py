@@ -1,3 +1,4 @@
+import base64
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file #  Flask, request, jsonify 필수 
 import subprocess
 import mysql.connector
@@ -116,12 +117,20 @@ def upload_file():
 
 
 # # 유병주가 개발 중
-# @app.route('/generate_fall_capture', methods=['POST'])
-# def generate_fall_capture():
-#     data = request.get_json()
-#     image_path = main.generate_image(data.get('..\image'))  # 이미지 파일 경로 가져오기
+
+@app.route('/fall_detector')
+def fall_detector():
     
-#     return jsonify({"image_path": image_path})
+    # subprocess를 사용하여 python main.py 실행 (이 부분은 python main.py가 정확한 경로에 있어야 함)
+    cmd = 'python main.py'
+    subprocess.Popen(cmd, shell=True)
+
+
+    # 연결 및 커서 닫기
+    cursor.close()
+    connection.close()
+   
+
 
 if __name__ == '__main__':
 
@@ -131,7 +140,6 @@ if __name__ == '__main__':
     # 커서 생성
     cursor = connection.cursor()
     
-    cursor.execute("use flask")
     app.run(host='0.0.0.0',debug=True,port=5001)
 
 

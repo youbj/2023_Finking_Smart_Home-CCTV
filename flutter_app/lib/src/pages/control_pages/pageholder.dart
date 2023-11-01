@@ -7,6 +7,19 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'websocket/webrtc_controller.dart';
 import 'websocket/webrtc_peerview.dart';
 
+
+
+
+import 'package:http/http.dart' as http;
+void sendHttpRequest() async {
+  final response = await http.get(Uri.parse('http://192.168.0.11:5001')); // 서버 URL로 변경
+  if (response.statusCode == 200) {
+    print('Request successful');
+  } else {
+    print('Request failed with status: ${response.statusCode}');
+  }
+}
+
 class Pageholder extends StatefulWidget {
   const Pageholder({Key? key}) : super(key: key);
 
@@ -111,13 +124,15 @@ class _PageholderState extends State<Pageholder> {
       /** 이벤트 페이지 */
       _eventPage(),
       /** 환경설정 */
-      _controlPage()
+      _controlPage(),
+
     ]);
   }
 
   /// 메인 페이지
   Widget _mainPage() {
     var size = MediaQuery.of(context).size;
+
     return SafeArea(
       child: ValueListenableBuilder<List<String>>(
           valueListenable: _controller.userListNotifier,

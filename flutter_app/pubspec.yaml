@@ -57,6 +57,7 @@ dependencies:
     provider: ^6.0.5
     flutter_webrtc: ^0.9.45
     quiver: 3.2.1
+    image_picker: ^0.8.4+4
     
 dev_dependencies:
     flutter_test:

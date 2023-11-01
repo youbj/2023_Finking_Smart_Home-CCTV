@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import requests
 import torch
 import cv2
 import math
@@ -6,7 +7,7 @@ from torchvision import transforms
 import numpy as np
 import os
 import datetime
-import time
+import base64
 from tqdm import tqdm
 from flask import Flask, render_template, request, redirect, url_for, jsonify #  Flask, request, jsonify 필수 
 from utils.datasets import letterbox
@@ -14,9 +15,11 @@ from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
 from push_notifications import send_push_notification
 
-from flask_socketio import send, emit
+from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit
 
-app = Flask(__name__) # 추가해주기 
+app = Flask(__name__)
+socketio = SocketIO(app)
 
 UPLOAD_FOLDER = '../images'  # 이미지를 저장하는 디렉토리
 
@@ -184,11 +187,13 @@ def send_notification():
 
 #############################################################################################
 
+
 device_index = 0
 
 def main():
-    # 웹캠 캡처를 생성합니다.
-    vid_cap = cv2.VideoCapture(device_index)  # 0은 기본 웹캠을 가리킵니다. 다른 카메라 사용시 device_index를 1로 사용하면 됨
+    vid_cap = cv2.VideoCapture(device_index)  
+    # 0은 기본 카메라(핸드폰에서 실행하면 핸드폰 후방카메라, 컴퓨터면 웹캠)을 가리킵니다. 
+    # 다른 카메라 사용시 device_index를 1로 사용하면 됨
     
     model, device = get_pose_model()
     
@@ -236,17 +241,30 @@ def main():
 
         # 결과를 화면에 표시합니다.
         cv2.imshow('Fall Detection!', _image)
-
-        # 'q' 키를 누르면 루프를 종료합니다.
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+        
+        ###################==개발중==########################
+        # 이미지를 바이트 배열로 변환
+        # _, buffer = cv2.imencode('.jpg', _image)
+        # image_bytes = buffer.tobytes()
+
+        # # 바이트 배열을 Base64 문자열로 변환
+        # image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        
+        # response = requests.post('http://192.168.0.11:5001/image_update', json={'imageData': image_base64})
+        
+        # if response.status_code == 200:
+        #     print('이미지 전송 성공')
+        # else:
+        #     print('이미지 전송 실패')
+
+       
 
     vid_cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    # 웹캠 캡쳐
-    vid_cap = cv2.VideoCapture(0)
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()

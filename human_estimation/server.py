@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 
 
 app = Flask(__name__)
@@ -82,5 +82,14 @@ def handle_disconnect():
     socketio.emit('updateUserlist', {'userList': userList}, broadcast=True)
     print(f'[disconnected] id: {userId}')
 
+
+#유병주 개발ing
+@socketio.on('image_update')
+def send_image(data):
+    image_base64 = data.get('imageData')
+    
+    if image_base64:
+        emit('update_image', {'imageData': image_base64}, broadcast=True)
+
 if __name__ == '__main__':
-    socketio.run(app,host='192.168.0.13', port=5002,debug=True )
+    app.run(host='0.0.0.0', port=5001)

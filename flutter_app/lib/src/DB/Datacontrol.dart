@@ -39,7 +39,7 @@ Future<CameraData> fetchData() async {
 }
 
 void updateData() async {
-  final updateUrl = Uri.parse('http://192.168.0.13:5001/run_fall_detector');
+  final updateUrl = Uri.parse('http://http://192.168.0.13/run_fall_detector');
   try {
     final response = await http.get(updateUrl);
     if (response.statusCode == 200) {

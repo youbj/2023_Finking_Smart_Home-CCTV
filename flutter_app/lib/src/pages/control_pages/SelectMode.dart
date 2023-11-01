@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardian/src/pages/control_pages/pageholder.dart';
+import 'package:guardian/src/pages/control_pages/test.dart';
 
 import 'CCTV/Streamingpage.dart';
 
@@ -10,7 +11,7 @@ class SelectMode extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
@@ -91,6 +92,38 @@ class SelectMode extends StatelessWidget {
                     ),
                     Text(
                       '관리자 모드',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+
+            //test
+            Container(
+              width: 200,
+              height: 200,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WebcamDisplay()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shadowColor: Colors.black.withOpacity(0.3),
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30))),
+                child: Column(
+                  children: [                   
+                    Text(
+                      'test 모드',
                       style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,

@@ -18,6 +18,7 @@ Future<Map<String, dynamic>> getCameraData() async {
   }
 }
 
+
 class CameraData {
   final String id;
   final String cameraStartTime;

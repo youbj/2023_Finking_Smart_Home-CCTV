@@ -1,11 +1,20 @@
+
+import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/DB/Datacontrol.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/eventview.dart';
 import 'package:guardian/src/pages/register_login/fisrt.dart';
+import 'package:guardian/src/widgets/CustomStyle.dart';
 import '../../widgets/common_switch.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'websocket/webrtc_controller.dart';
+
+import 'websocket/webrtc_mainview.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'websocket/webrtc_peerview.dart';
 
 class Pageholder extends StatefulWidget {
@@ -263,9 +272,31 @@ class _PageholderState extends State<Pageholder> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () async {
-                // 버튼을 누를 때마다 ListTile 추가
-                CameraData cameraData = await fetchData();
+              onPressed: ()  async{
+              // 버튼을 누를 때마다 ListTile 추가
+               CameraData cameraData = await fetchData();//여기서 데이터를 받아옴
+                     //*snackbar 작업
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                       content: Row(
+                        children: [
+                          Icon(Icons.warning, color: Colors.yellow), // 아이콘 추가
+                            SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격 조절
+                              Text('넘어짐이 감지되었습니다!'),
+                              ],
+                                ),
+                                duration: Duration(seconds: 3),
+                                backgroundColor: Colors.red, // 스낵바의 배경색 변경
+                                action: SnackBarAction(
+                                  label: '닫기',
+                                  onPressed: () {
+                                    // 스낵바를 닫는 작업 추가
+                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  },
+                                ),
+                              ),
+                                          );
+                                          //*snackbar 작업
                 setState(() {
                   drawerItems.add(
                     Container(

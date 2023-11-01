@@ -35,8 +35,8 @@ def get_camera_data():
     cursor = connection.cursor()
 
     # 데이터베이스에서 데이터 조회
-    query = "SELECT * FROM camera_log3 WHERE id = %s"  # id로 필터링
-    values = ("이연규",) #values 값 고정
+    query = "SELECT * FROM camera_log WHERE id = %s"  # id로 필터링
+    values = ("3801",) #values 값 고정
     cursor.execute(query, values)
     data = cursor.fetchone()  # 한 레코드만 가져옴 (여러 레코드라면 fetchall() 사용)
 
@@ -65,6 +65,7 @@ def run_fall_detector():
 
     return 'Fall Detector is running!'
 
+
 # 넘어진 감지 스크린샷 프론트로 api전송 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -79,28 +80,8 @@ def upload_file():
     return jsonify({'message': 'File uploaded successfully', 'user': user, 'current_time': current_time, 'filename': filename, 'situation': situation})
    
     
-    
-    
-    
-
-
-# # 유병주가 개발 중
-# @app.route('/generate_fall_capture', methods=['POST'])
-# def generate_fall_capture():
-#     data = request.get_json()
-#     image_path = main.generate_image(data.get('..\image'))  # 이미지 파일 경로 가져오기
-    
-#     return jsonify({"image_path": image_path})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True,port=5001)
    
 
-
-# 사용법:
-# /get_camera_data:  엔드포인트로 GET 요청을 보내면 카메라에 관련된 데이터가 JSON 형식으로 반환
-
-# 데이터 형식:
-# 반환되는 데이터는 JSON
-# id: 카메라 ID (정수)
-# camera_start_time: 카메라 작동 시작 시간 (문자열)

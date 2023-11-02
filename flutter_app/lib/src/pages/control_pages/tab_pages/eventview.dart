@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:guardian/src/DB/Datacontrol.dart';
+import '../pageholder.dart';
 
 enum Options { search, upload, copy, exit }
 
 class EventView extends StatefulWidget {
-  final CameraData cameraData; // CameraData 필드 추가
+  final MessagefetchData cameraData; // CameraData 필드 추가
   EventView({super.key, required this.cameraData});
 
   @override
@@ -12,20 +13,20 @@ class EventView extends StatefulWidget {
 }
 
 class _EventViewState extends State<EventView> {
-  String url = 'http://192.168.0.32:5001/images/';
+  String url = 'http://192.168.0.23:5001/images/';
 
   var appBarHeight = AppBar().preferredSize.height;
 
   @override
   Widget build(BuildContext context) {
-    String year = widget.cameraData.cameraStartTime.substring(0, 4);
-    String month = widget.cameraData.cameraStartTime.substring(4, 6);
-    String days = widget.cameraData.cameraStartTime.substring(6, 8);
-    String hours = widget.cameraData.cameraStartTime.substring(8, 10);
-    String min = widget.cameraData.cameraStartTime.substring(10, 12);
+    String year = widget.cameraData.message_cameraStartTime.substring(0, 4);
+    String month = widget.cameraData.message_cameraStartTime.substring(4, 6);
+    String days = widget.cameraData.message_cameraStartTime.substring(6, 8);
+    String hours = widget.cameraData.message_cameraStartTime.substring(8, 10);
+    String min = widget.cameraData.message_cameraStartTime.substring(10, 12);
 
-    String user = widget.cameraData.id;
-    String situation = widget.cameraData.cameraSituation;
+    String user = widget.cameraData.message_id;
+    String situation = widget.cameraData.message_cameraSituation;
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -96,7 +97,7 @@ class _EventViewState extends State<EventView> {
             ),
             Container(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Image.network(url + widget.cameraData.cameraImage),
+              child: Image.network(url + widget.cameraData.message_cameraImage),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -8,14 +8,28 @@ import 'package:provider/provider.dart';
 import 'fcm_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-
 class MessageData with ChangeNotifier {
   Map<String, dynamic>? _data;
 
   Map<String, dynamic>? get data => _data;
 
+  bool _dataUpdated = false; // 상태 업데이트 여부를 나타내는 프로퍼티
+  bool get dataUpdated => _dataUpdated; // dataUpdated 프로퍼티의 getter
+
+  bool _isNotificationEnabled = false; // 알림 아이콘 변경 업데이트 프로퍼티
+  bool get isNotificationEnabled => _isNotificationEnabled;
+
   void updateData(Map<String, dynamic> newData) {
     _data = newData;
+    print('업데이트');
+    _dataUpdated = true;
+    _isNotificationEnabled = true;
+    notifyListeners();
+  }
+
+  void updataNoti(bool newData) {
+    _isNotificationEnabled = newData;
+    _dataUpdated = newData;
     notifyListeners();
   }
 }
@@ -66,17 +80,16 @@ class _MyAppState extends State<MyApp> {
     _initFirebaseMessaging();
   }
 
-  Future<void> _initFirebaseMessaging() async {
+  void _initFirebaseMessaging() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       logger.i('Received a message in the foreground:');
       print('Message data: ${message.data}');
-      
+      context.read<MessageData>().updateData(message.data);
       if (message.notification != null) {
         setState(() {
           messageTitle = message.notification!.title ?? "";
           messageBody = message.notification!.body ?? "";
         });
-        context.read<MessageData>().updateData(message.data);
       }
     });
 
@@ -87,8 +100,8 @@ class _MyAppState extends State<MyApp> {
           messageTitle = message.notification!.title ?? "";
           messageBody = message.notification!.body ?? "";
         });
-        context.read<MessageData>().updateData(message.data);
       }
+      context.read<MessageData>().updateData(message.data);
     });
 
     FirebaseMessaging.instance
@@ -101,8 +114,8 @@ class _MyAppState extends State<MyApp> {
             messageTitle = message.notification!.title ?? "";
             messageBody = message.notification!.body ?? "";
           });
-          context.read<MessageData>().updateData(message.data);
         }
+        context.read<MessageData>().updateData(message.data);
       }
     });
   }
@@ -132,6 +145,4 @@ class _MyAppState extends State<MyApp> {
       return const Intro();
     }
   }
-
-
 }

@@ -16,8 +16,14 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
 from push_notifications import send_push_notification
+from pyfcm import FCMNotification
 
-url = 'http://192.168.0.23:5001/upload'
+
+api_key = "AAAAMlpetjU:APA91bHcplRtoIiKAlWNY13i2WIQPfgMnTRDceV9eghiTAaT2hI9zwSWZczt5XaV_y3AghJt-yvqAF5TktAwMpEMCkVfQ87bYMrL_Alb4n6fy9f2acwBXE0lCOU4GFvNW0Fa9YoYT2en"
+
+registeration_id = ""
+
+url = 'http://192.168.0.32:5001/upload'
 
 app = Flask(__name__) # 추가해주기 
 
@@ -90,7 +96,6 @@ def falling_alarm(image, bbox, prev_fall):
     
     #저장 경로를 저장하는 것
     if not prev_fall:
-
         save_path = os.path.join('.\images', filename)
         cv2.imwrite(save_path, image)
     
@@ -104,13 +109,13 @@ def falling_alarm(image, bbox, prev_fall):
     cursor.close()
     connection.close()
 
-    data = {
-    'user': user,
-    'current_time': current_time,
-    'filename': filename,
-    'situation': "넘어짐"
-}
-    requests.post(url, data=data)
+#     data = {
+#     'user': user,
+#     'current_time': current_time,
+#     'filename': filename,
+#     'situation': "넘어짐"
+# }
+#     requests.post(url, data=data)
 
 
 
@@ -160,13 +165,13 @@ def no_movement(image, img_save):
     cursor.close()
     connection.close()
 
-    data = {
-    'user': user,
-    'current_time': current_time,
-    'filename': filename,
-    'situation': "움직임"
-}
-    requests.post(url, data=data)
+#     data = {
+#     'user': user,
+#     'current_time': current_time,
+#     'filename': filename,
+#     'situation': "움직임"
+# }
+#     requests.post(url, data=data)
 
 
     

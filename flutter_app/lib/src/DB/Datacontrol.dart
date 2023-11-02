@@ -18,12 +18,14 @@ Future<Map<String, dynamic>> getCameraData() async {
   }
 }
 
-
 class CameraData {
   final String id;
   final String cameraStartTime;
   final String cameraImage;
-  CameraData(this.id, this.cameraStartTime, this.cameraImage);
+  final String cameraSituation;
+
+  CameraData(
+      this.id, this.cameraStartTime, this.cameraImage, this.cameraSituation);
 }
 
 Future<CameraData> fetchData() async {
@@ -32,7 +34,8 @@ Future<CameraData> fetchData() async {
     String id = data['id'];
     String camera_start_time = data['camera_start_time'];
     String camera_image = data['camera_image'];
-    return CameraData(id, camera_start_time, camera_image);
+    String camera_situation = data['camera_situation'];
+    return CameraData(id, camera_start_time, camera_image, camera_situation);
   } catch (error) {
     print('오류: $error');
     // 에러 처리가 필요한 경우 적절한 값이나 예외를 throw 할 수 있습니다.

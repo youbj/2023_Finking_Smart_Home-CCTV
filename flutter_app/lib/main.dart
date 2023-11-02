@@ -6,6 +6,7 @@ import 'package:guardian/src/intro.dart';
 import 'package:logger/logger.dart';
 import 'fcm_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 final logger = Logger();
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();

@@ -35,8 +35,8 @@ def get_camera_data():
     cursor = connection.cursor()
 
     # 데이터베이스에서 데이터 조회
-    query = "SELECT * FROM camera_log WHERE id = %s"  # id로 필터링
-    values = ("3801",) #values 값 고정
+    query = "SELECT * FROM camera_log3 WHERE camera_start_time = %s"  # id로 필터링
+    values = ("20231101222422",) #values 값 고정
     cursor.execute(query, values)
     data = cursor.fetchone()  # 한 레코드만 가져옴 (여러 레코드라면 fetchall() 사용)
 
@@ -49,7 +49,8 @@ def get_camera_data():
         response = {
             'id': data[0],                # id 컬럼
             'camera_start_time': data[1],  # camera_start_time 컬럼
-            'camera_image' : data[2]
+            'camera_image' : data[2],
+            'camera_situation' : data[3]
         }
         return jsonify(response)  # JSON 형태로 데이터 반환
     else:
@@ -59,7 +60,7 @@ def get_camera_data():
 def run_fall_detector():
 
     # subprocess를 사용하여 python main.py 실행 (이 부분은 python main.py가 정확한 경로에 있어야 함)
-    cmd = 'python before_main.py'
+    cmd = 'python main.py'
     subprocess.Popen(cmd, shell=True)
 
 

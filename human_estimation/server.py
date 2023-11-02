@@ -83,5 +83,5 @@ def handle_disconnect():
     print(f'[disconnected] id: {userId}')
 
 if __name__ == '__main__':
-    socketio.run(app,host='192.168.0.32', port=5002,debug=True )
+    socketio.run(app,host='192.168.0.21', port=5002,debug=True )
 

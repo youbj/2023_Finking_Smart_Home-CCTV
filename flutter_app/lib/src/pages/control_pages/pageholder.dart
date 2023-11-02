@@ -26,6 +26,7 @@ class _PageholderState extends State<Pageholder> {
   final WebRTCController _controller = WebRTCController();
   List<Widget> drawerItems = []; // ListTile을 저장하는 리스트
   int itemCount = 0; // 현재 아이템 개수
+ 
 
   @override
   void initState() {
@@ -41,6 +42,11 @@ class _PageholderState extends State<Pageholder> {
 
   @override
   Widget build(BuildContext context) {
+   
+
+
+
+
     return ValueListenableBuilder<ScreenState>(
       valueListenable: _controller.screenNotifier,
       builder: (_, screenState, __) {
@@ -262,6 +268,9 @@ class _PageholderState extends State<Pageholder> {
 
   /// 감지 페이지
   Widget _detectPage() {
+
+    String url = 'http://192.168.0.21:5001/images/';
+
     return Container(
       child: Center(
         child: Column(
@@ -269,6 +278,7 @@ class _PageholderState extends State<Pageholder> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
+
               onPressed: () async {
                 // 버튼을 누를 때마다 ListTile 추가
                 CameraData cameraData = await fetchData(); //여기서 데이터를 받아옴
@@ -294,6 +304,7 @@ class _PageholderState extends State<Pageholder> {
                   ),
                 );
                 //*snackbar 작업
+
                 setState(() {
                   drawerItems.add(
                     Container(

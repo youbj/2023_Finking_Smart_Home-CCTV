@@ -4,24 +4,108 @@ import 'package:guardian/src/App.dart';
 import 'package:flutter/material.dart';
 import 'package:guardian/src/intro.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 import 'fcm_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+
+class MessageData with ChangeNotifier {
+  Map<String, dynamic>? _data;
+
+  Map<String, dynamic>? get data => _data;
+
+  void updateData(Map<String, dynamic> newData) {
+    _data = newData;
+    notifyListeners();
+  }
+}
 
 final logger = Logger();
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // 앱 초기화를 위해 필요한 코드
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   String? _fcmToken = await FirebaseMessaging.instance.getToken();
-  logger.e(_fcmToken); // FCM 토큰을 로깅
-  configureFcmMessageHandling(); // 별도의 Dart 파일에서 가져온 메시지 처리 코드 호출
+  logger.i('FCM Token: $_fcmToken');
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  runApp(MyApp());
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  configureFcmMessageHandling();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => MessageData()),
+        // 다른 프로바이더 추가 가능
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}); // super.key -> Key? key 으로 수정
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String messageTitle = "";
+  String messageBody = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _initFirebaseMessaging();
+  }
+
+  Future<void> _initFirebaseMessaging() async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      logger.i('Received a message in the foreground:');
+      print('Message data: ${message.data}');
+      
+      if (message.notification != null) {
+        setState(() {
+          messageTitle = message.notification!.title ?? "";
+          messageBody = message.notification!.body ?? "";
+        });
+        context.read<MessageData>().updateData(message.data);
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      logger.i('User tapped the notification:');
+      if (message.notification != null) {
+        setState(() {
+          messageTitle = message.notification!.title ?? "";
+          messageBody = message.notification!.body ?? "";
+        });
+        context.read<MessageData>().updateData(message.data);
+      }
+    });
+
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      if (message != null) {
+        logger.i('User opened the app via a notification:');
+        if (message.notification != null) {
+          setState(() {
+            messageTitle = message.notification!.title ?? "";
+            messageBody = message.notification!.body ?? "";
+          });
+          context.read<MessageData>().updateData(message.data);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +122,16 @@ class MyApp extends StatelessWidget {
               );
             }));
   }
-}
 
-Widget _splashLoadingWidget(AsyncSnapshot<Object?> snapshot) {
-  if (snapshot.hasError) {
-    return const Text("Error!!");
-  } else if (snapshot.hasData) {
-    return const App();
-  } else {
-    return const Intro();
+  Widget _splashLoadingWidget(AsyncSnapshot<Object?> snapshot) {
+    if (snapshot.hasError) {
+      return const Text("Error!!");
+    } else if (snapshot.hasData) {
+      return const App();
+    } else {
+      return const Intro();
+    }
   }
+
+
 }

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:guardian/main.dart';
 import 'package:guardian/src/DB/Datacontrol.dart';
 import 'package:guardian/src/pages/control_pages/tab_pages/eventview.dart';
 import 'package:guardian/src/pages/register_login/fisrt.dart';
@@ -9,29 +11,42 @@ import 'package:guardian/src/widgets/CustomStyle.dart';
 import '../../widgets/common_switch.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'websocket/webrtc_controller.dart';
-
+import 'package:provider/provider.dart';
 import 'websocket/webrtc_mainview.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'websocket/webrtc_peerview.dart';
 
+class MessagefetchData {
+  final String message_id;
+  final String message_cameraStartTime;
+  final String message_cameraImage;
+  final String message_cameraSituation;
+
+  MessagefetchData(this.message_id, this.message_cameraStartTime,
+      this.message_cameraImage, this.message_cameraSituation);
+}
+
 class Pageholder extends StatefulWidget {
   const Pageholder({Key? key}) : super(key: key);
-
   @override
   State<Pageholder> createState() => _PageholderState();
 }
 
 class _PageholderState extends State<Pageholder> {
   final WebRTCController _controller = WebRTCController();
+
   List<Widget> drawerItems = []; // ListTile을 저장하는 리스트
   int itemCount = 0; // 현재 아이템 개수
- 
 
   @override
   void initState() {
     super.initState();
     _controller.initHandler();
+
+    fetchData().then(
+      (data) => {print('$data init에서'), setState(() {})},
+    );
   }
 
   @override
@@ -42,89 +57,159 @@ class _PageholderState extends State<Pageholder> {
 
   @override
   Widget build(BuildContext context) {
-   
-
-
-
-
-    return ValueListenableBuilder<ScreenState>(
-      valueListenable: _controller.screenNotifier,
-      builder: (_, screenState, __) {
-        late Widget body;
-        switch (screenState) {
-          case ScreenState.loading: // socket 접속 대기
-            body = const Center(
-              child: Text('Loading...'),
-            );
-            break;
-          case ScreenState.initDone: // socket 연결 이후 화면
-            _controller.requsetList();
-            body = _initDone();
-            break;
-          case ScreenState.receivedCalling:
-            body = _receivedCalling();
-            // Not use
-            break;
-        }
-        return DefaultTabController(
-          length: 4,
-          child: Scaffold(
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(80),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AppBar(
-                      iconTheme: IconThemeData(
-                        color: Colors.blue,
-                      ),
-                      leading: Container(
-                          margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Icon(Icons.menu, size: 30)),
-                      backgroundColor: Color.fromARGB(255, 250, 250, 250),
-                      centerTitle: true,
-                      title: Text(
-                        'Home Guardian',
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      elevation: 0.0,
-                      actions: [
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                          child: Builder(
-                            builder: (context) => IconButton(
-                              color: Colors.blue,
-                              icon: Icon(
-                                Icons.notifications,
-                                size: 30,
-                              ),
-                              onPressed: () =>
-                                  Scaffold.of(context).openEndDrawer(),
-                            ),
-                          ),
-                        ),
-                      ]),
-                ],
+    return Consumer<MessageData>(
+      builder: (context, messageData, child) {
+        if (messageData.dataUpdated) {
+          MessagefetchData fetchData = messagefetchData(messageData);
+          drawerItems.add(
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color.fromARGB(255, 220, 220, 220),
+                  ),
+                ),
+              ),
+              child: ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                leading: Container(
+                  padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
+                  child: Icon(
+                    Icons.security,
+                    color: Colors.blue,
+                    size: 30,
+                  ),
+                ),
+                title: Text(
+                  '${fetchData.message_id} CCTV에서 위험상황이 감지되었습니다.',
+                  style: TextStyle(
+                    fontSize: 13,
+                  ),
+                ),
+                subtitle: Container(
+                    padding: EdgeInsets.only(top: 5), child: Text('')),
+                trailing: IconButton(
+                  color: Colors.amber,
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EventView(
+                                cameraData: fetchData,
+                              )),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.chevron_right,
+                    color: Colors.blue,
+                    size: 30,
+                  ),
+                ),
               ),
             ),
-            endDrawer: _buildDrawer(),
-            body: body,
-            bottomNavigationBar: _buildBottomNavigationBar(),
-          ),
+          );
+          itemCount++;
+        }
+
+        return ValueListenableBuilder<ScreenState>(
+          valueListenable: _controller.screenNotifier,
+          builder: (_, screenState, __) {
+            late Widget body;
+            switch (screenState) {
+              case ScreenState.loading: // socket 접속 대기
+                body = const Center(
+                  child: Text('Loading...'),
+                );
+                break;
+              case ScreenState.initDone: // socket 연결 이후 화면
+                _controller.requsetList();
+                body = _initDone(messageData);
+                break;
+              case ScreenState.receivedCalling:
+                body = _receivedCalling();
+                // Not use
+                break;
+            }
+            return DefaultTabController(
+              length: 4,
+              child: Scaffold(
+                appBar: PreferredSize(
+                  preferredSize: Size.fromHeight(80),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppBar(
+                          iconTheme: IconThemeData(
+                            color: Colors.blue,
+                          ),
+                          leading: Container(
+                              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              child: Icon(Icons.menu, size: 30)),
+                          backgroundColor: Color.fromARGB(255, 250, 250, 250),
+                          centerTitle: true,
+                          title: Text(
+                            'Home Guardian',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          elevation: 0.0,
+                          actions: <Widget>[
+                            if (messageData.isNotificationEnabled)
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                child: Builder(
+                                  builder: (context) => IconButton(
+                                      color: Colors.red,
+                                      icon: Icon(
+                                        Icons.notifications_active,
+                                        size: 30,
+                                      ),
+                                      onPressed: () {
+                                        Scaffold.of(context).openEndDrawer();
+                                        messageData.updataNoti(false);
+                                      }),
+                                ),
+                              ),
+                            if (!messageData.isNotificationEnabled)
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                child: Builder(
+                                  builder: (context) => IconButton(
+                                      color: Colors.blue,
+                                      icon: Icon(
+                                        Icons.notifications,
+                                        size: 30,
+                                      ),
+                                      onPressed: () {
+                                        Scaffold.of(context).openEndDrawer();
+                                      }),
+                                ),
+                              ),
+                          ]),
+                    ],
+                  ),
+                ),
+                endDrawer: _buildDrawer(),
+                body: body,
+                bottomNavigationBar: _buildBottomNavigationBar(),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _initDone() {
+  Widget _initDone(MessageData messageData) {
     return TabBarView(children: [
       /** 메인페이지 */
       _mainPage(),
       /** 감지 페이지 */
-      _detectPage(),
+      _detectPage(messageData),
       /** 이벤트 페이지 */
       _eventPage(),
       /** 환경설정 */
@@ -134,7 +219,6 @@ class _PageholderState extends State<Pageholder> {
 
   /// 메인 페이지
   Widget _mainPage() {
-    var size = MediaQuery.of(context).size;
     return SafeArea(
       child: ValueListenableBuilder<List<String>>(
           valueListenable: _controller.userListNotifier,
@@ -266,110 +350,30 @@ class _PageholderState extends State<Pageholder> {
     );
   }
 
+  MessagefetchData messagefetchData(MessageData messageData) {
+    String id = messageData.data?['user_ID'];
+    String camera_start_time = messageData.data?['camera_start_time'];
+    String camera_image = messageData.data?['camera_image'];
+    String camera_situation = messageData.data?['camera_situation'];
+    return MessagefetchData(
+        id, camera_start_time, camera_image, camera_situation);
+  }
+
   /// 감지 페이지
-  Widget _detectPage() {
-
-    String url = 'http://192.168.0.21:5001/images/';
-
-    return Container(
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-
-              onPressed: () async {
-                // 버튼을 누를 때마다 ListTile 추가
-                CameraData cameraData = await fetchData(); //여기서 데이터를 받아옴
-                //*snackbar 작업
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(Icons.warning, color: Colors.yellow), // 아이콘 추가
-                        SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격 조절
-                        Text('넘어짐이 감지되었습니다!'),
-                      ],
-                    ),
-                    duration: Duration(seconds: 3),
-                    backgroundColor: Colors.red, // 스낵바의 배경색 변경
-                    action: SnackBarAction(
-                      label: '닫기',
-                      onPressed: () {
-                        // 스낵바를 닫는 작업 추가
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      },
-                    ),
-                  ),
-                );
-                //*snackbar 작업
-
-                setState(() {
-                  drawerItems.add(
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Color.fromARGB(255, 220, 220, 220),
-                          ),
-                        ),
-                      ),
-                      child: ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        leading: Container(
-                          padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-                          child: Icon(
-                            Icons.security,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                        ),
-                        title: Text(
-                          '${cameraData.id}님의 CCTV에서 위험상황이 감지되었습니다.',
-                          style: TextStyle(
-                            fontSize: 13,
-                          ),
-                        ),
-                        subtitle: Container(
-                            padding: EdgeInsets.only(top: 5),
-                            child: Text(cameraData.cameraStartTime)),
-                        trailing: IconButton(
-                          color: Colors.amber,
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EventView(
-                                        cameraData: cameraData,
-                                      )),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.chevron_right,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                  itemCount++;
-                });
-              },
-              child: Text('Add ListTile to Drawer'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // 버튼을 누를 때마다 ListTile 추가
-                updateData();
-              },
-              child: Text('Run detection'),
-            ),
-          ],
-        ),
+  Widget _detectPage(MessageData messageData) {
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              // 버튼을 누를 때마다 ListTile 추가
+              updateData();
+            },
+            child: Text('Run detection'),
+          ),
+        ],
       ),
     );
   }

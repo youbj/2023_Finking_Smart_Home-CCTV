@@ -21,10 +21,10 @@ from pyfcm import FCMNotification
 
 
 
-registeration_id = "dKmApgNUT3muVo66Aw_th_:APA91bHlBiohrtKBy8SFHUgH06f_afdYCVzTb97DFYYbokls-VpeT9_zC_NI00sY9uQe1teo4LYP3Qu42L_F5W-Y34NpYX2R6ik86BG50eiElgG9QWZxr5BBN7iaE-1z6TbJJymo3ItQ"
+registeration_id = "et0BbJV6RXK53JrM4NknWu:APA91bGQAfGHaiLJEQtm7l1KjLLgXAvW0qYUOWkWogPBve181RgiA2QtI_TwkMIbFcoVN0TbhdypjZ0ZXTZz6D6cSJFLC60Uk7Gt88EU7kXkWB2Te3qlrd2sCz4JnJ-kPCM6kVPxQhKA"
 push_service = pyfcm.FCMNotification(api_key="AAAAMlpetjU:APA91bHcplRtoIiKAlWNY13i2WIQPfgMnTRDceV9eghiTAaT2hI9zwSWZczt5XaV_y3AghJt-yvqAF5TktAwMpEMCkVfQ87bYMrL_Alb4n6fy9f2acwBXE0lCOU4GFvNW0Fa9YoYT2en")
 
-url = 'http://192.168.0.21:5001/upload'
+url = 'http://192.168.0.23:5001/upload'
 
 
 app = Flask(__name__) # 추가해주기 

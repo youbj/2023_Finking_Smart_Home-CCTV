@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import '../../../DB/Datacontrol.dart';
 import '../websocket/webrtc_controller.dart';
 import '../websocket/webrtc_mainview.dart';
 
@@ -68,34 +69,20 @@ class _StreamingpageState extends State<Streamingpage> {
                 )
               : null,
           body: body,
-          // floatingActionButton: screenState == ScreenState.initDone
-          //     ? FloatingActionButton(
-          //         mini: true,
-          //         child: ValueListenableBuilder<bool>(
-          //           valueListenable: _controller.localVideoNotifier,
-          //           builder: (_, camOn, __) {
-          //             return camOn
-          //                 ? const CircleAvatar(
-          //                     backgroundColor: Colors.yellow,
-          //                     foregroundColor: Colors.white,
-          //                     child: Icon(Icons.videocam_off),
-          //                   )
-          //                 : const CircleAvatar(
-          //                     backgroundColor: Colors.green,
-          //                     foregroundColor: Colors.white,
-          //                     child: Icon(Icons.videocam),
-          //                   );
-          //           },
-          //         ),
-          //         onPressed: () async {
-          //           if (_controller.localVideoNotifier.value) {
-          //             await _controller.turnOffMedia();
-          //           } else {
-          //             await _controller.turnOnMedia();
-          //           }
-          //         },
-          //       )
-          //     : null,
+          floatingActionButton: screenState == ScreenState.initDone
+              ? FloatingActionButton(
+                  onPressed: () {
+                    updateData();
+                  },
+                  tooltip: '감지 모드 켜기',
+                  child: CircleAvatar(
+                    maxRadius: 30,
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    child: Icon(Icons.videocam),
+                  ),
+                )
+              : null,
         );
       },
     );

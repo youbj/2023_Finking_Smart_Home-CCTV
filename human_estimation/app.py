@@ -59,7 +59,7 @@ def get_camera_data():
 def run_fall_detector():
 
     # subprocess를 사용하여 python main.py 실행 (이 부분은 python main.py가 정확한 경로에 있어야 함)
-    cmd = 'python before_main.py'
+    cmd = 'python main.py'
     subprocess.Popen(cmd, shell=True)
 
 

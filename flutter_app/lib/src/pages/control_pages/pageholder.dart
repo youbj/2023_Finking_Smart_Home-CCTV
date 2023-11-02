@@ -28,6 +28,7 @@ class _PageholderState extends State<Pageholder> {
   final WebRTCController _controller = WebRTCController();
   List<Widget> drawerItems = []; // ListTile을 저장하는 리스트
   int itemCount = 0; // 현재 아이템 개수
+ 
 
   @override
   void initState() {
@@ -43,6 +44,11 @@ class _PageholderState extends State<Pageholder> {
 
   @override
   Widget build(BuildContext context) {
+   
+
+
+
+
     return ValueListenableBuilder<ScreenState>(
       valueListenable: _controller.screenNotifier,
       builder: (_, screenState, __) {
@@ -264,7 +270,7 @@ class _PageholderState extends State<Pageholder> {
 
   /// 감지 페이지
   Widget _detectPage() {
-    String url = 'http://192.168.0.32:5001/images/';
+    String url = 'http://192.168.0.21:5001/images/';
     return Container(
       child: Center(
         child: Column(
@@ -275,28 +281,6 @@ class _PageholderState extends State<Pageholder> {
               onPressed: ()  async{
               // 버튼을 누를 때마다 ListTile 추가
                CameraData cameraData = await fetchData();//여기서 데이터를 받아옴
-                     //*snackbar 작업
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                       content: Row(
-                        children: [
-                          Icon(Icons.warning, color: Colors.yellow), // 아이콘 추가
-                            SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격 조절
-                              Text('넘어짐이 감지되었습니다!'),
-                              ],
-                                ),
-                                duration: Duration(seconds: 3),
-                                backgroundColor: Colors.red, // 스낵바의 배경색 변경
-                                action: SnackBarAction(
-                                  label: '닫기',
-                                  onPressed: () {
-                                    // 스낵바를 닫는 작업 추가
-                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                  },
-                                ),
-                              ),
-                                          );
-                                          //*snackbar 작업
                 setState(() {
                   drawerItems.add(
                     Container(

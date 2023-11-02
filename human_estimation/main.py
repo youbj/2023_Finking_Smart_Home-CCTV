@@ -1,5 +1,6 @@
 
 import matplotlib.pyplot as plt
+import pyfcm
 import requests
 import torch
 import cv2
@@ -16,8 +17,13 @@ from utils.datasets import letterbox
 from utils.general import non_max_suppression_kpt
 from utils.plots import output_to_keypoint, plot_skeleton_kpts
 from push_notifications import send_push_notification
+from pyfcm import FCMNotification
 
-url = 'http://192.168.0.23:5001/upload'
+
+registeration_id = "dKmApgNUT3muVo66Aw_th_:APA91bHlBiohrtKBy8SFHUgH06f_afdYCVzTb97DFYYbokls-VpeT9_zC_NI00sY9uQe1teo4LYP3Qu42L_F5W-Y34NpYX2R6ik86BG50eiElgG9QWZxr5BBN7iaE-1z6TbJJymo3ItQ"
+push_service = pyfcm.FCMNotification(api_key="AAAAMlpetjU:APA91bHcplRtoIiKAlWNY13i2WIQPfgMnTRDceV9eghiTAaT2hI9zwSWZczt5XaV_y3AghJt-yvqAF5TktAwMpEMCkVfQ87bYMrL_Alb4n6fy9f2acwBXE0lCOU4GFvNW0Fa9YoYT2en")
+
+url = 'http://192.168.0.21:5001/upload'
 
 app = Flask(__name__) # 추가해주기 
 
@@ -90,7 +96,6 @@ def falling_alarm(image, bbox, prev_fall):
     
     #저장 경로를 저장하는 것
     if not prev_fall:
-
         save_path = os.path.join('.\images', filename)
         cv2.imwrite(save_path, image)
     
@@ -100,17 +105,37 @@ def falling_alarm(image, bbox, prev_fall):
     cursor.execute(insert_query, insert_values)
 
     connection.commit()  # 데이터베이스에 변경 사항을 커밋.
+    
+    data_message = {
+        "title": "움직임",
+        "body": "알림 내용",
+        "user_ID": str(user),
+        "camera_start_time":current_time,
+        "camera_image":filename,
+        "camera_situation":"움직임"
+    }
 
+    result = push_service.notify_single_device(
+        registration_id= registeration_id,
+        data_message= data_message
+    )
+
+    
+    print('=========================================================')
+    print(result)
+    for key, value in data_message.items():
+        print(f"{key}: {value}")
+    print('=========================================================')
     cursor.close()
     connection.close()
 
-    data = {
-    'user': user,
-    'current_time': current_time,
-    'filename': filename,
-    'situation': "넘어짐"
-}
-    requests.post(url, data=data)
+#     data = {
+#     'user': user,
+#     'current_time': current_time,
+#     'filename': filename,
+#     'situation': "넘어짐"
+# }
+#     requests.post(url, data=data)
 
 
 
@@ -156,17 +181,28 @@ def no_movement(image, img_save):
     cursor.execute(insert_query, insert_values)
 
     connection.commit()  # 데이터베이스에 변경 사항을 커밋.
+    
+    data_message = {
+        "title": "움직임",
+        "body": "알림 내용",
+        "user_ID": str(user),
+        "camera_start_time":current_time,
+        "camera_image":filename,
+        "camera_situation":"움직임"
+    }
+    
+    result = push_service.notify_single_device(
+        registration_id=registeration_id,
+        data_message=data_message
+    )
+    print('=========================================================')
+    print(result)
+    for key, value in data_message.items():
+        print(f"{key}: {value}")
+    print('=========================================================')
 
     cursor.close()
     connection.close()
-
-    data = {
-    'user': user,
-    'current_time': current_time,
-    'filename': filename,
-    'situation': "움직임"
-}
-    requests.post(url, data=data)
 
 
     
@@ -288,4 +324,3 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)    
     main()
-

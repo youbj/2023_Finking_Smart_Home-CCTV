@@ -7,7 +7,7 @@ class CustomStyle {
 
   static TextStyle FirstStyle() {
     return TextStyle(
-        fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold);
+        fontSize: 25, color: Colors.black, fontWeight: FontWeight.bold);
   }
 
   static TextStyle OnboardingStyle() {

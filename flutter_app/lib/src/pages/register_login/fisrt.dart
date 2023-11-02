@@ -85,7 +85,7 @@ class First extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    '을 통해 집안 안전을 지키세요.',
+                                    '을 통해 안전을 지키세요.',
                                     style: TextStyle(
                                       color: Colors.black54,
                                       fontSize: 15,

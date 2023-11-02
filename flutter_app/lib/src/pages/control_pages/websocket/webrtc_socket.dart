@@ -9,8 +9,8 @@ class WebRTCSocket {
   Future<String?> connectSocket() {
     final Completer<String> completer = Completer<String>();
 
+    _socket = io.io('http://192.168.0.32:5002/',
 
-    _socket = io.io('http://192.168.0.21:5002/',
         io.OptionBuilder().setTransports(['websocket']).build());
 
     _socket.onConnect((data) {

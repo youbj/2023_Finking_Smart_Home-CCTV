@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'fcm_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+
 class MessageData with ChangeNotifier {
   Map<String, dynamic>? _data;
 
@@ -18,7 +19,6 @@ class MessageData with ChangeNotifier {
     notifyListeners();
   }
 }
-
 
 final logger = Logger();
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

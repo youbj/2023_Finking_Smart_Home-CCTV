@@ -13,7 +13,7 @@ class EventView extends StatefulWidget {
 }
 
 class _EventViewState extends State<EventView> {
-  String url = 'http://192.168.0.23:5001/images/';
+  String url = 'http://172.20.10.14:5001/images/';
 
   var appBarHeight = AppBar().preferredSize.height;
 

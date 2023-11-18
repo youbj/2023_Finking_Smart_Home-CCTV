@@ -275,7 +275,7 @@ class _PageholderState extends State<Pageholder> {
             Align(
               alignment: Alignment.center,
               child: IconButton(
-                iconSize: 50,
+                iconSize: 40,
                 color: Colors.black,
                 onPressed: () async {
                   setState(() {
@@ -672,7 +672,7 @@ class _PageholderState extends State<Pageholder> {
         return InkWell(
           onTap: () {
             setState(() {
-              drawerItems.removeAt(index);
+             
             });
           },
           child: drawerItems[index],
